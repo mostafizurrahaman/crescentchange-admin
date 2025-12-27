@@ -3,10 +3,12 @@ import { useState } from "react";
 import { DatePicker, Input, Table, Spin, Modal, Tag, Divider, Button } from "antd";
 import { SearchOutlined, LoadingOutlined } from "@ant-design/icons";
 import { VscEye } from "react-icons/vsc";
+import { FiDownload } from "react-icons/fi";
 import user from "../../assets/image/user.png";
 
 import useSmartFetchHook from "../../Components/hooks/useSmartFetchHook.ts";
 import { useGetDonationReportQuery } from "../../redux/feature/donation/donationApis";
+import { exportToXlsx } from "../../lib/export-xlsx";
 
 const DonorDataTable = () => {
   const { RangePicker } = DatePicker;
@@ -43,6 +45,25 @@ const DonorDataTable = () => {
       newParams.toDate = dateStrings[1];
     }
     setFilterParams(newParams);
+  };
+
+  const handleExport = () => {
+    const rows = (Array.isArray(data) ? data : []).map((r) => {
+      const badges = Array.isArray(r?.badges) ? r.badges : [];
+      return {
+        Name: r?.name || "-",
+        Email: r?.email || "-",
+        "Total Donations": Number(r?.totalDonationAmount ?? 0),
+        "Badges Earned": badges.length,
+        "Created At": r?.createdAt ? new Date(r.createdAt).toLocaleString() : "-",
+      };
+    });
+
+    exportToXlsx({
+      rows,
+      sheetName: "Donors",
+      fileName: `donors-${new Date().toISOString().slice(0, 10)}.xlsx`,
+    });
   };
 
   const columns = [
@@ -186,6 +207,14 @@ const DonorDataTable = () => {
               />
             </div>
           </div>
+
+          <Button
+            onClick={handleExport}
+            disabled={isLoading}
+            className="!h-12 !rounded-full !border-gray-200 !px-6 !text-sm !font-medium"
+          >
+            Export <FiDownload className="ml-2" />
+          </Button>
         </div>
       </div>
 

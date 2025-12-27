@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  Button,
   Input,
   Modal,
   Table,
@@ -13,10 +14,12 @@ import {
 import { RxCrossCircled } from "react-icons/rx";
 import { BsExclamationCircle } from "react-icons/bs";
 import icon from "../../assets/image/leaf.png";
+import { FiDownload } from "react-icons/fi";
 import { SearchOutlined, LoadingOutlined } from "@ant-design/icons";
 
 import useSmartFetchHook from "../../Components/hooks/useSmartFetchHook.ts";
 import { useGetRewardReportQuery } from "../../redux/feature/reward/rewardApis";
+import { exportToXlsx } from "../../lib/export-xlsx";
 
 const RewardsManagementTable = () => {
   const { RangePicker } = DatePicker;
@@ -161,6 +164,24 @@ const RewardsManagementTable = () => {
     setFilterParams(newParams);
   };
 
+  const handleExport = () => {
+    const rows = (Array.isArray(apiResponse) ? apiResponse : []).map((r) => ({
+      Title: r?.title || "-",
+      Business: r?.business?.name || "-",
+      Tier: r?.tier || r?.category || "-",
+      Redemptions: r?.redeemedCount ?? r?.redemptions ?? 0,
+      Status: r?.status || "-",
+      "Start Date": r?.startDate ? new Date(r.startDate).toLocaleString() : "-",
+      "Expiry Date": r?.expiryDate ? new Date(r.expiryDate).toLocaleString() : "-",
+    }));
+
+    exportToXlsx({
+      rows,
+      sheetName: "Rewards",
+      fileName: `rewards-${new Date().toISOString().slice(0, 10)}.xlsx`,
+    });
+  };
+
   return (
     <div className="mb-10 bg-white border border-gray-100 rounded-3xl">
       <div className="flex flex-col gap-4 p-6 border-b border-gray-100 md:flex-row md:items-center md:justify-between">
@@ -195,6 +216,14 @@ const RewardsManagementTable = () => {
               />
             </div>
           </div>
+
+          <Button
+            onClick={handleExport}
+            disabled={isLoading}
+            className="!h-12 !rounded-full !border-gray-200 !px-6 !text-sm !font-medium"
+          >
+            Export <FiDownload className="ml-2" />
+          </Button>
         </div>
       </div>
 

@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import {
+  Button,
   Input,
   Table,
   Drawer,
@@ -27,6 +28,7 @@ import {
 } from "@ant-design/icons";
 
 import icon from "../../assets/image/leaf.png";
+import { FiDownload } from "react-icons/fi";
 
 import useSmartFetchHook from "../../Components/hooks/useSmartFetchHook.ts";
 import { useGetBusinessesReportQuery } from "../../redux/feature/business/businessApis";
@@ -34,6 +36,7 @@ import {
   useChangeUserStatusMutation,
   useDeleteUserMutation,
 } from "../../redux/feature/user/userApis";
+import { exportToXlsx } from "../../lib/export-xlsx";
 
 const COVER =
   "https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=1200&auto=format&fit=crop";
@@ -100,6 +103,36 @@ const BusinessPortfolio = () => {
       newParams.endDate = dateStrings[1];
     }
     setFilterParams(newParams);
+  };
+
+  const tableData = Array.isArray(data)
+    ? data.map((b) => ({
+        key: b?._id,
+        authId: b?.auth?._id || b?.auth?.id,
+        name: b?.name,
+        email: b?.auth?.email,
+        status: b?.auth?.status,
+        isActive: b?.auth?.isActive,
+        createdAt: b?.createdAt,
+        updatedAt: b?.updatedAt,
+        icon,
+      }))
+    : [];
+
+  const handleExport = () => {
+    const rows = (Array.isArray(tableData) ? tableData : []).map((r) => ({
+      Name: r?.name || "-",
+      Email: r?.email || "-",
+      Status: r?.status || "-",
+      Active: r?.isActive ? "Active" : "Inactive",
+      "Created At": r?.createdAt ? new Date(r.createdAt).toLocaleString() : "-",
+    }));
+
+    exportToXlsx({
+      rows,
+      sheetName: "Businesses",
+      fileName: `businesses-${new Date().toISOString().slice(0, 10)}.xlsx`,
+    });
   };
 
   const openProfile = (record) => {
@@ -327,6 +360,14 @@ const BusinessPortfolio = () => {
               />
             </div>
           </div>
+
+          <Button
+            onClick={handleExport}
+            disabled={isLoading}
+            className="!h-12 !rounded-full !border-gray-200 !px-6 !text-sm !font-medium"
+          >
+            Export <FiDownload className="ml-2" />
+          </Button>
         </div>
       </div>
 
@@ -334,19 +375,7 @@ const BusinessPortfolio = () => {
         <div className="">
           <Table
             columns={columns}
-            dataSource={Array.isArray(data)
-              ? data.map((b) => ({
-                  key: b?._id,
-                  authId: b?.auth?._id || b?.auth?.id,
-                  name: b?.name,
-                  email: b?.auth?.email,
-                  status: b?.auth?.status,
-                  isActive: b?.auth?.isActive,
-                  createdAt: b?.createdAt,
-                  updatedAt: b?.updatedAt,
-                  icon,
-                }))
-              : []}
+            dataSource={tableData}
             rowKey="key"
             onChange={(tablePagination, _filters, sorter) => {
               setCurrentPage(tablePagination.current);

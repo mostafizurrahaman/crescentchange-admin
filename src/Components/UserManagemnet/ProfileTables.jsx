@@ -5,15 +5,18 @@ import {
   Input,
   Modal,
   Table,
+  Button,
 } from "antd";
 import { SearchOutlined, LoadingOutlined } from "@ant-design/icons";
 import { VscEye } from "react-icons/vsc";
 import { RxCross2 } from "react-icons/rx";
 import user from "../../assets/image/user.png";
 import { Check, Trash2 } from "lucide-react";
+import { FiDownload } from "react-icons/fi";
 import useSmartFetchHook from "../hooks/useSmartFetchHook.ts";
 import { useGetUserReportQuery } from "../../redux/feature/user/userApis.js";
 import { baseApi } from "../../redux/feature/baseApi";
+import { exportToXlsx } from "../../lib/export-xlsx";
 
 const ProfileTables = () => {
   const { RangePicker } = DatePicker;
@@ -86,6 +89,30 @@ const ProfileTables = () => {
     }
 
     setFilterParams(newFilterParams);
+  };
+
+  const handleExport = () => {
+    const rows = (Array.isArray(data) ? data : []).map((r) => ({
+      Name:
+        r?.firstName || r?.lastName
+          ? `${r?.firstName || ""} ${r?.lastName || ""}`.trim()
+          : r?.email?.split("@")[0] || "-",
+      Email: r?.email || "-",
+      Status: r?.status || "-",
+      "Last Active": r?.lastActive
+        ? new Date(r.lastActive).toLocaleString()
+        : r?.updatedAt
+        ? new Date(r.updatedAt).toLocaleString()
+        : r?.createdAt
+        ? new Date(r.createdAt).toLocaleString()
+        : "-",
+    }));
+
+    exportToXlsx({
+      rows,
+      sheetName: "Profiles",
+      fileName: `profiles-${new Date().toISOString().slice(0, 10)}.xlsx`,
+    });
   };
 
   const columns = [
@@ -243,6 +270,14 @@ const ProfileTables = () => {
               />
             </div>
           </div>
+
+          <Button
+            onClick={handleExport}
+            disabled={isLoading}
+            className="!h-11 !rounded-full !border-gray-200 !px-5 !text-sm !font-medium"
+          >
+            Export <FiDownload className="ml-2" />
+          </Button>
         </div>
       </div>
 

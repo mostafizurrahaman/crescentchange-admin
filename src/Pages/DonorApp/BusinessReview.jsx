@@ -1,8 +1,10 @@
-import { DatePicker, Input, Table } from "antd";
+import { DatePicker, Input, Table, Button } from "antd";
 import icon from "../../assets/image/leaf.png";
 import { SearchOutlined } from "@ant-design/icons";
+import { FiDownload } from "react-icons/fi";
 import useSmartFetchHook from "../../Components/hooks/useSmartFetchHook.ts";
 import { useGetBusinessesRewardQuery } from "../../redux/feature/business/businessApis";
+import { exportToXlsx } from "../../lib/export-xlsx";
 const BusinessReview = () => {
   const { RangePicker } = DatePicker;
 
@@ -56,6 +58,21 @@ const BusinessReview = () => {
       ),
     },
   ];
+
+  const handleExport = () => {
+    const rows = (Array.isArray(data) ? data : []).map((r) => ({
+      Business: r?.name || "-",
+      "Active Rewards": r?.rewardTotal ?? 0,
+      "Total Redemptions": r?.totalRedemption ?? 0,
+      "Top Rewards": typeof r?.topReward === "string" ? r.topReward : r?.topReward?.name || r?.topReward?.title || "-",
+    }));
+
+    exportToXlsx({
+      rows,
+      sheetName: "Business Rewards",
+      fileName: `business-rewards-${new Date().toISOString().slice(0, 10)}.xlsx`,
+    });
+  };
   return (
     <div className="mb-10 bg-white border border-gray-100 rounded-3xl">
       <div className="flex flex-col gap-4 p-6 border-b border-gray-100 md:flex-row md:items-center md:justify-between">
@@ -94,6 +111,14 @@ const BusinessReview = () => {
               />
             </div>
           </div>
+
+          <Button
+            onClick={handleExport}
+            disabled={isLoading}
+            className="!h-12 !rounded-full !border-gray-200 !px-6 !text-sm !font-medium"
+          >
+            Export <FiDownload className="ml-2" />
+          </Button>
         </div>
       </div>
 

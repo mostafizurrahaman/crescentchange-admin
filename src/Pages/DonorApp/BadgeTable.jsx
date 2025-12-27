@@ -3,11 +3,13 @@ import { Button, Dropdown, Input, Menu, Modal, Table, message } from "antd";
 import { DownOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { FaPencilAlt } from "react-icons/fa";
 import { RxCrossCircled } from "react-icons/rx";
+import { FiDownload } from "react-icons/fi";
 
 import useSmartFetchHook from "../../Components/hooks/useSmartFetchHook.ts";
 import { useDeleteBadgeMutation, useGetBadgeReportQuery } from "../../redux/feature/badge/badgeApis";
 import CreateBadgeModal from "./CreateBadgeModal";
 import UpdateBadgeModal from "./UpdateBadgeModal";
+import { exportToXlsx } from "../../lib/export-xlsx";
 const BadgeTable = () => {
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -86,6 +88,26 @@ const BadgeTable = () => {
       iconUrl: b?.icon || "",
     }));
   }, [data]);
+
+  const handleExport = () => {
+    const rows = (Array.isArray(normalizedData) ? normalizedData : []).map((r) => ({
+      Name: r?.name || "-",
+      Icon: r?.iconUrl || "-",
+      Description: r?.description || "-",
+      "Unlock Type": r?.unlockType || "-",
+      Active: r?.isActive ? "Active" : "Inactive",
+      Featured: r?.featured ? "Featured" : "Normal",
+      Priority: r?.priority ?? "-",
+      "Condition Logic": r?.conditionLogic || "-",
+      "Created At": r?.createdAt ? new Date(r.createdAt).toLocaleString() : "-",
+    }));
+
+    exportToXlsx({
+      rows,
+      sheetName: "Badges",
+      fileName: `badges-${new Date().toISOString().slice(0, 10)}.xlsx`,
+    });
+  };
 
   const columns = [
     {
@@ -225,6 +247,14 @@ const BadgeTable = () => {
               Filter <DownOutlined />
             </Button>
           </Dropdown>
+
+          <Button
+            onClick={handleExport}
+            disabled={isLoading}
+            className="!h-12 !rounded-full !border-gray-200 !px-6 !text-sm !font-medium"
+          >
+            Export <FiDownload className="ml-2" />
+          </Button>
 
           <Button
             icon={<PlusOutlined />}

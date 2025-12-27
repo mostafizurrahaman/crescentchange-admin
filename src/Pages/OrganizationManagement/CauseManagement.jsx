@@ -11,12 +11,14 @@ import {
 import { SearchOutlined } from "@ant-design/icons";
 import { VscEye } from "react-icons/vsc";
 import { FaPencilAlt, FaPlus } from "react-icons/fa";
+import { FiDownload } from "react-icons/fi";
 const { Option } = Select;
 
 import useSmartFetchHook from "../../Components/hooks/useSmartFetchHook.ts";
 import { useGetAllCauseQuery, useUpdateCauseMutation, useGetCauseCategoriesQuery, useChangeCauseStatusMutation, useCreateCauseMutation } from "../../redux/feature/cause/causeApis";
 import { useGetOrganizationReportQuery } from "../../redux/feature/organization/organizationApis";
 import { SuccessToast, ErrorToast } from "../../lib/utils.js";
+import { exportToXlsx } from "../../lib/export-xlsx";
 
 const CauseManagement = () => {
   const {
@@ -48,6 +50,23 @@ const CauseManagement = () => {
   const handleView = (record) => {
     setViewRecord(record);
     setIsViewModalOpen(true);
+  };
+
+  const handleExport = () => {
+    const rows = (Array.isArray(data) ? data : []).map((r) => ({
+      Name: r?.name || "-",
+      Description: r?.description || "-",
+      Category: r?.category || "-",
+      Status: r?.status || "-",
+      Organization: r?.organization?.name || "-",
+      "Created At": r?.createdAt ? new Date(r.createdAt).toLocaleString() : "-",
+    }));
+
+    exportToXlsx({
+      rows,
+      sheetName: "Causes",
+      fileName: `causes-${new Date().toISOString().slice(0, 10)}.xlsx`,
+    });
   };
 
   /** Open Edit Modal */
@@ -249,6 +268,14 @@ const CauseManagement = () => {
             className="flex items-center justify-center gap-2 px-5 py-3 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-full whitespace-nowrap"
           >
             <FaPlus /> Add Cause
+          </button>
+
+          <button
+            type="button"
+            onClick={handleExport}
+            className="flex items-center justify-center gap-2 px-5 py-3 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-full whitespace-nowrap"
+          >
+            Export <FiDownload className="text-base" />
           </button>
         </div>
       </div>

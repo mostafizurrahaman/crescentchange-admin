@@ -14,7 +14,7 @@ import { VscEye } from "react-icons/vsc";
 import user from "../../assets/image/user.png";
 import { FaImage } from "react-icons/fa";
 import { FiDownload } from "react-icons/fi";
-import * as XLSX from "xlsx";
+import { exportToXlsx } from "../../lib/export-xlsx";
 
 import { useGetSubscriptionPaymentsQuery } from "../../redux/feature/subscription/subscriptionApis";
 
@@ -100,12 +100,11 @@ const OrganizationSubscription = ({ setExportHandler }) => {
       };
     });
 
-    const worksheet = XLSX.utils.json_to_sheet(rows);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Subscriptions");
-
-    const fileName = `subscriptions-${new Date().toISOString().slice(0, 10)}.xlsx`;
-    XLSX.writeFile(workbook, fileName);
+    exportToXlsx({
+      rows,
+      sheetName: "Subscriptions",
+      fileName: `subscriptions-${new Date().toISOString().slice(0, 10)}.xlsx`,
+    });
   };
 
   useEffect(() => {

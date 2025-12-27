@@ -6,9 +6,11 @@ import { Button, Modal } from "antd";
 import { FaEye } from "react-icons/fa";
 import { AllImages } from "../../../assets/image/AllImages";
 import { FiUserCheck } from "react-icons/fi";
+import { FiDownload } from "react-icons/fi";
 import { LiaUserSlashSolid } from "react-icons/lia";
 import { SearchOutlined } from "@ant-design/icons";
 import { LuRefreshCcw } from "react-icons/lu";
+import { exportToXlsx } from "../../../lib/export-xlsx";
 const Subscribers = () => {
     const userData = [
         {
@@ -73,10 +75,26 @@ const Subscribers = () => {
         // refetc();
     };
 
+    const handleExport = () => {
+        const rows = (Array.isArray(userData) ? userData : []).map((r) => ({
+            Name: r?.name || "-",
+            Email: r?.email || "-",
+            Contact: r?.contact || "-",
+            Location: r?.location || "-",
+            Address: r?.address || "-",
+            "Donation Amount": r?.donation_amount ?? "-",
+            "Subscription Type": r?.subscription_type || "-",
+        }));
+
+        exportToXlsx({
+            rows,
+            sheetName: "Subscribers",
+            fileName: `subscribers-${new Date().toISOString().slice(0, 10)}.xlsx`,
+        });
+    };
+
     const handleSession = (record) => {
-        console.log(record);
-
-
+        void record;
     }
 
     const columns = [
@@ -223,6 +241,10 @@ const Subscribers = () => {
                             </div>
                         </ConfigProvider>
                     </div>
+
+                    <Button onClick={handleExport} className="flex items-center justify-center gap-2">
+                        Export <FiDownload className="text-base" />
+                    </Button>
 
                 </div>
             </div>

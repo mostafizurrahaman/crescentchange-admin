@@ -1,6 +1,7 @@
-import { Table, Input, Drawer } from "antd";
+import { Table, Input, Drawer, Button } from "antd";
 import { VscEye } from "react-icons/vsc";
 import user from "../../../assets/image/user.png";
+import { FiDownload } from "react-icons/fi";
 import Chnage from "../../../assets/image/Change.png";
 import Gift from "../../../assets/image/Gift.png";
 import Calendar from "../../../assets/image/Calendar.png";
@@ -8,6 +9,7 @@ import { SlArrowLeft } from "react-icons/sl";
 import { useGetDonationHistoryQuery } from "../../../redux/feature/donation/donationApis";
 import useSmartFetchHook from "../../hooks/useSmartFetchHook.ts";
 import { useState } from "react";
+import { exportToXlsx } from "../../../lib/export-xlsx";
 const DonationQuickLink = () => {
   const { Search } = Input;
 
@@ -74,6 +76,25 @@ const DonationQuickLink = () => {
     donationMessage: item?.specialMessage || "-",
     amount: Number(item?.amount) || 0,
   })) || [];
+
+  const handleExport = () => {
+    const rows = (Array.isArray(tableData) ? tableData : []).map((r) => ({
+      Name: r?.donorName || "-",
+      Email: r?.donorEmail || "-",
+      Amount: Number(r?.amount ?? 0),
+      "Donation Type": r?.donationType || "-",
+      "Date & Time": r?.dateTime ? new Date(r.dateTime).toLocaleString() : "-",
+      Message: r?.donationMessage || "-",
+      Cause: r?.causeId || "-",
+      Organization: r?.organizationName || "-",
+    }));
+
+    exportToXlsx({
+      rows,
+      sheetName: "Donations",
+      fileName: `donations-${new Date().toISOString().slice(0, 10)}.xlsx`,
+    });
+  };
 
   const handleOpenView = (record) => {
     setSelectedDonation(record);
@@ -238,6 +259,14 @@ const DonationQuickLink = () => {
                   bordered={false}
                 />
               </div>
+
+              <Button
+                onClick={handleExport}
+                disabled={isLoading}
+                className="!h-10 !rounded-full !border-gray-200 !px-5 !text-sm !font-medium"
+              >
+                Export <FiDownload className="ml-2" />
+              </Button>
             </div>
           </div>
           <Table

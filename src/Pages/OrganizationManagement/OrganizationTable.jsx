@@ -13,8 +13,10 @@ import { VscEye } from "react-icons/vsc";
 import user from "../../assets/image/user.png";
 import { FaImage, FaUsers } from "react-icons/fa";
 import { GoOrganization } from "react-icons/go";
+import { FiDownload } from "react-icons/fi";
 import useSmartFetchHook from "../../Components/hooks/useSmartFetchHook.ts";
 import { useGetOrganizationReportQuery } from "../../redux/feature/organization/organizationApis.js";
+import { exportToXlsx } from "../../lib/export-xlsx";
 
 const OrganizationTable = () => {
   const { RangePicker } = DatePicker;
@@ -58,42 +60,23 @@ const OrganizationTable = () => {
   };
 
   const handleExport = () => {
-    const rowsHtml = (data || [])
-      .map((r) => {
-        const firstCause = Array.isArray(r.causes) && r.causes.length > 0 ? r.causes[0]?.name : "-";
-        const created = r.createdAt ? new Date(r.createdAt).toLocaleString() : "-";
-        const status = r?.auth?.status || "-";
-        return `<tr>
-                  <td style="padding:8px;border:1px solid #ddd;">${r.name || "-"}</td>
-                  <td style="padding:8px;border:1px solid #ddd;">${r.email || "-"}</td>
-                  <td style="padding:8px;border:1px solid #ddd;">${firstCause}</td>
-                  <td style="padding:8px;border:1px solid #ddd;">${r.serviceType || "-"}</td>
-                  <td style="padding:8px;border:1px solid #ddd;">${created}</td>
-                  <td style="padding:8px;border:1px solid #ddd;">${status}</td>
-                </tr>`;
-      })
-      .join("");
-    const html = `<!doctype html>
-      <html><head><meta charset='utf-8'><title>Organizations</title>
-      <style>table{border-collapse:collapse;width:100%;font:14px system-ui} th,td{border:1px solid #ddd;padding:8px} th{background:#f3f4f6;text-align:left}</style>
-      </head><body>
-      <h2>Organizations</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th><th>Email</th><th>Cause Name</th><th>Service Type</th><th>Created At</th><th>Status</th>
-          </tr>
-        </thead>
-        <tbody>${rowsHtml}</tbody>
-      </table>
-      <script>window.onload=()=>window.print()</script>
-      </body></html>`;
-    const w = window.open("", "_blank");
-    if (w) {
-      w.document.open();
-      w.document.write(html);
-      w.document.close();
-    }
+    const rows = (Array.isArray(data) ? data : []).map((r) => {
+      const firstCause = Array.isArray(r?.causes) && r.causes.length > 0 ? r.causes[0]?.name : "-";
+      return {
+        Name: r?.name || "-",
+        Email: r?.email || "-",
+        "Cause Name": firstCause || "-",
+        "Service Type": r?.serviceType || "-",
+        "Created At": r?.createdAt ? new Date(r.createdAt).toLocaleString() : "-",
+        Status: r?.auth?.status || "-",
+      };
+    });
+
+    exportToXlsx({
+      rows,
+      sheetName: "Organizations",
+      fileName: `organizations-${new Date().toISOString().slice(0, 10)}.xlsx`,
+    });
   };
 
   const handleView = (record) => {
@@ -254,7 +237,7 @@ const OrganizationTable = () => {
             onClick={handleExport}
             className="!h-11 !rounded-full !border-gray-200 !px-5 !text-sm !font-medium"
           >
-            Export
+            Export <FiDownload className="ml-2" />
           </Button>
         </div>
       </div>

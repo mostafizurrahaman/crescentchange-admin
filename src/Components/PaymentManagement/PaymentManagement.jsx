@@ -4,9 +4,11 @@ import { useState } from "react";
 
 import { Modal } from "antd";
 import { FaCalendar, FaStopwatch } from "react-icons/fa";
+import { FiDownload } from "react-icons/fi";
 
 import { SearchOutlined } from "@ant-design/icons";
 import { AllImages } from "../../assets/image/AllImages";
+import { exportToXlsx } from "../../lib/export-xlsx";
 const PaymentManagement = () => {
     const userData = [
         {
@@ -78,6 +80,24 @@ const PaymentManagement = () => {
 
     const handleSearch = () => {
         // refetc();
+    };
+
+    const handleExport = () => {
+        const rows = (Array.isArray(userData) ? userData : []).map((r) => ({
+            Name: r?.name || "-",
+            Email: r?.email || "-",
+            "Appointment Fee": r?.appointment_fee || "-",
+            "Appointment Date": r?.date || "-",
+            "Paid Amount": r?.paid_amount || "-",
+            "Transaction ID": r?.transection_id || "-",
+            Status: r?.status || "-",
+        }));
+
+        exportToXlsx({
+            rows,
+            sheetName: "Payments",
+            fileName: `payments-${new Date().toISOString().slice(0, 10)}.xlsx`,
+        });
     };
     // stsus change according to upcoming, completed, cancelled
     const handleStatusChange = (id) => {
@@ -212,6 +232,14 @@ const PaymentManagement = () => {
                             </div>
                         </ConfigProvider>
                     </div>
+
+                    <button
+                        type="button"
+                        onClick={handleExport}
+                        className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-md"
+                    >
+                        Export <FiDownload className="text-base" />
+                    </button>
 
                 </div>
             </div>

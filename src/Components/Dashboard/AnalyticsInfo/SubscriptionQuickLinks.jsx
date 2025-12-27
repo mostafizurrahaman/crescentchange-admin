@@ -3,6 +3,7 @@ import { Table, DatePicker, Modal, Button, Input } from "antd";
 // import { MoreOutlined } from "@ant-design/icons";
 import { VscEye } from "react-icons/vsc";
 import user from "../../../assets/image/user.png";
+import { FiDownload } from "react-icons/fi";
 
 import { SlArrowLeft } from "react-icons/sl";
 import DonorsSubscription from "../../ManageSubscription/SubscriptionAndPaymentExport";
@@ -12,6 +13,7 @@ import {
 } from "../../../redux/feature/subscription/subscriptionApis.js";
 import { SearchOutlined } from "@ant-design/icons";
 import { useState } from "react";
+import { exportToXlsx } from "../../../lib/export-xlsx";
 const SubscriptionQuickLinks = () => {
   const { RangePicker } = DatePicker;
 
@@ -39,6 +41,22 @@ const SubscriptionQuickLinks = () => {
 
   const tableData = Array.isArray(listRes?.data) ? listRes.data : [];
   const meta = listRes?.meta ?? {};
+
+  const handleExport = () => {
+    const rows = (Array.isArray(tableData) ? tableData : []).map((r) => ({
+      Email: r?.user?.email || "-",
+      Type: r?.planType || "-",
+      Status: r?.status || "-",
+      "Start Date": r?.startDate ? new Date(r.startDate).toLocaleString() : "-",
+      "Renewal Date": r?.renewalDate ? new Date(r.renewalDate).toLocaleString() : "-",
+    }));
+
+    exportToXlsx({
+      rows,
+      sheetName: "Subscriptions",
+      fileName: `subscriptions-${new Date().toISOString().slice(0, 10)}.xlsx`,
+    });
+  };
 
   const handleOpenView = (record) => {
     setSelectedSubscription(record);
@@ -240,6 +258,14 @@ const SubscriptionQuickLinks = () => {
                 />
               </div>
             </div>
+
+            <Button
+              onClick={handleExport}
+              disabled={isLoading}
+              className="!h-11 !rounded-full !border-gray-200 !px-5 !text-sm !font-medium"
+            >
+              Export <FiDownload className="ml-2" />
+            </Button>
           </div>
         </div>
 

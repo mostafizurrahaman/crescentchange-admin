@@ -26,6 +26,8 @@ import entire from "../../../assets/image/entire.png";
 import qr from "../../../assets/image/qr.png";
 import nfc from "../../../assets/image/nfc.png";
 import manual from "../../../assets/image/manual.png";
+import { FiDownload } from "react-icons/fi";
+import { exportToXlsx } from "../../../lib/export-xlsx";
 // import { FaPlus } from "react-icons/fa6";
 import useSmartFetchHook from "../../hooks/useSmartFetchHook.ts";
 import {
@@ -90,6 +92,7 @@ const DonorRewards = () => {
   const [rewards, setRewards] = useState(initialRewards);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [selectedReward, setSelectedReward] = useState(null);
+  const [redemptionsPage, setRedemptionsPage] = useState(1);
   const [selectedRewardId, setSelectedRewardId] = useState(null);
   const [updatingRewardId, setUpdatingRewardId] = useState(null);
 
@@ -104,6 +107,46 @@ const DonorRewards = () => {
 
   const rewardDetails = singleRewardResponse?.data?.reward;
   const redemptionList = singleRewardResponse?.data?.redeemtionList || [];
+
+  const redemptionPageSize = 5;
+  const redemptionCurrentPageData = redemptionList
+    .slice((redemptionsPage - 1) * redemptionPageSize, redemptionsPage * redemptionPageSize)
+    .map((item) => ({
+      key: item?._id,
+      name: item?.user?.name || "-",
+      email: item?.user?.auth?.email || "-",
+      status: item?.status,
+      redemptionMethod: item?.redemptionMethod,
+      assignedCode: item?.assignedCode,
+      date: item?.claimedAt
+        ? new Date(item.claimedAt).toLocaleDateString()
+        : item?.createdAt
+        ? new Date(item.createdAt).toLocaleDateString()
+        : "-",
+      time: item?.claimedAt
+        ? new Date(item.claimedAt).toLocaleTimeString()
+        : item?.createdAt
+        ? new Date(item.createdAt).toLocaleTimeString()
+        : "-",
+    }));
+
+  const handleExportRedemptions = () => {
+    const rows = redemptionCurrentPageData.map((r) => ({
+      Name: r?.name || "-",
+      Email: r?.email || "-",
+      Status: r?.status || "-",
+      Method: r?.redemptionMethod || "-",
+      Code: r?.assignedCode || "-",
+      Date: r?.date || "-",
+      Time: r?.time || "-",
+    }));
+
+    exportToXlsx({
+      rows,
+      sheetName: "Redemptions",
+      fileName: `redemptions-${new Date().toISOString().slice(0, 10)}.xlsx`,
+    });
+  };
 
   useEffect(() => {
     if (!Array.isArray(rewardList)) return;
@@ -432,7 +475,16 @@ const DonorRewards = () => {
                 </div>
 
                 {/* Redemption Stats */}
-                <h3 className="mb-2 font-semibold">Redemption Stats</h3>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold">Redemption Stats</h3>
+                  <Button
+                    onClick={handleExportRedemptions}
+                    disabled={isSingleRewardLoading}
+                    className="!h-10 !rounded-full !border-gray-200 !px-5 !text-sm !font-medium"
+                  >
+                    Export <FiDownload className="ml-2" />
+                  </Button>
+                </div>
                 <Table
                   columns={redemptionColumns}
                   dataSource={redemptionList.map((item) => ({
@@ -453,7 +505,12 @@ const DonorRewards = () => {
                       ? new Date(item.createdAt).toLocaleTimeString()
                       : "-",
                   }))}
-                  pagination={{ pageSize: 5 }}
+                  pagination={{
+                    current: redemptionsPage,
+                    pageSize: redemptionPageSize,
+                    onChange: (p) => setRedemptionsPage(p),
+                    showSizeChanger: false,
+                  }}
                   size="middle"
                 />
               </>
