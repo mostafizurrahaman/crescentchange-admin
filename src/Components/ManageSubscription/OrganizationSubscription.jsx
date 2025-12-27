@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import {
   Button,
@@ -8,79 +7,35 @@ import {
   Input,
   Menu,
   Modal,
-  Select,
   Table,
   Upload,
+  message,
 } from "antd";
 import { DownOutlined, SearchOutlined } from "@ant-design/icons";
 import { VscEye } from "react-icons/vsc";
 import user from "../../assets/image/user.png";
-import { MdOtherHouses } from "react-icons/md";
-import { FaImage, FaPencilAlt, FaUsers } from "react-icons/fa";
-import { GoOrganization } from "react-icons/go";
-import { RxCrossCircled } from "react-icons/rx";
+import { FaImage } from "react-icons/fa";
+import { FiDownload } from "react-icons/fi";
+
+import { useGetSubscriptionPaymentsQuery } from "../../redux/feature/subscription/subscriptionApis";
 
 const OrganizationSubscription = () => {
-  const { Option } = Select;
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit] = useState(5);
 
-  const originalData = [
-    {
-      key: "1",
-      name: "Josh Bill",
-      email: "johnnb@gmail.com",
-      dateTime: "12 Dec 2023 03:00 PM",
-      donationType: "Business",
-      donationMessage: "-",
-      amount: 34.5,
-      status: "Pending",
-    },
-    {
-      key: "2",
-      name: "M Karim",
-      email: "kkkarim@gmail.com",
-      dateTime: "10 Dec 2023 02:00 PM",
-      donationType: "Donor",
-      donationMessage: "Sending love & hope to everyone you’re helping",
-      amount: 62.75,
-      status: "Active",
-    },
-    {
-      key: "3",
-      name: "Josh Adam",
-      email: "jadddam@gmail.com",
-      dateTime: "08 Dec 2023 05:30 PM",
-      donationType: "Organization",
-      donationMessage: "-",
-      amount: 15.2,
-      status: "Suspended",
-    },
-    {
-      key: "4",
-      name: "Fajar Surya",
-      email: "fjsurya@gmail.com",
-      dateTime: "15 Dec 2023 09:00 AM",
-      donationType: "Donor",
-      donationMessage: "Sending love & hope to everyone you’re helping",
-      amount: 47.3,
-      status: "Active",
-    },
-    {
-      key: "5",
-      name: "Linda Blair",
-      email: "lindablair98@gmail.com",
-      dateTime: "18 Dec 2023 01:00 PM",
-      donationType: "Business",
-      donationMessage: "Sending love & hope to everyone you’re helping",
-      amount: 23.9,
-      status: "Pending",
-    },
-  ];
+  const { data: listRes, isLoading } = useGetSubscriptionPaymentsQuery({
+    page: currentPage,
+    limit,
+    searchTerm,
+  });
 
-  const [data, setData] = useState(originalData);
-  const [searchText, setSearchText] = useState("");
+  const data = Array.isArray(listRes?.data) ? listRes.data : [];
+  const pagination = listRes?.meta ?? {};
+
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
-  const [selectedProfile, setSelectedProfile] = useState(null);
   const [form] = Form.useForm();
 
   // 📸 Handle image upload
@@ -90,171 +45,117 @@ const OrganizationSubscription = () => {
     return false;
   };
 
-  // ✏️ Open edit modal
-  const handleEdit = (record) => {
-    setSelectedProfile(record);
-    form.setFieldsValue({
-      firstName: record.name.split(" ")[0],
-      lastName: record.name.split(" ")[1],
-      email: record.email,
-      mobile: "+61 470 292 023",
-      password: "********",
-    });
-    setPreviewImage(user);
-    setIsModalVisible(true);
-  };
-
   const handleCancel = () => {
     setIsModalVisible(false);
     form.resetFields();
     setPreviewImage(null);
   };
 
-  const handleSave = (values) => {
-    console.log("Updated values:", values);
+  const handleSave = (_values) => {
     setIsModalVisible(false);
   };
 
-  // 🔁 Sorting function
-  const handleSort = (key, order) => {
-    const sorted = [...data].sort((a, b) => {
-      if (key === "amount") {
-        return order === "ascend" ? a.amount - b.amount : b.amount - a.amount;
-      } else if (key === "name") {
-        return order === "ascend"
-          ? a.name.localeCompare(b.name)
-          : b.name.localeCompare(a.name);
-      } else if (key === "dateTime") {
-        return order === "ascend"
-          ? new Date(a.dateTime) - new Date(b.dateTime)
-          : new Date(b.dateTime) - new Date(a.dateTime);
-      }
-      return 0;
-    });
-    setData(sorted);
-  };
-
-  // 🔎 Role filter
-  const handleRoleFilter = (role) => {
-    if (role === "All") {
-      setData(originalData);
-    } else {
-      setData(originalData.filter((item) => item.donationType === role));
+  const handleDownload = (record) => {
+    if (!record) {
+      message.error("Nothing to download");
+      return;
     }
+
+    const fileName = `subscription-${record?._id || record?.id || "data"}.json`;
+    const payload = JSON.stringify(record, null, 2);
+    const blob = new Blob([payload], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
   };
 
-  const filteredData = data.filter(
-    (item) =>
-      item.name.toLowerCase().includes(searchText.toLowerCase()) ||
-      item.email.toLowerCase().includes(searchText.toLowerCase())
-  );
+  const formatDateTime = (value) => {
+    if (!value) return "-";
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return "-";
+    const date = d.toLocaleDateString(undefined, {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+    const time = d.toLocaleTimeString(undefined, {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    return (
+      <div>
+        <div className="text-sm font-medium text-gray-900">{date}</div>
+        <div className="text-xs text-gray-400">{time}</div>
+      </div>
+    );
+  };
 
   const columns = [
     {
       title: (
         <div className="flex items-center gap-2">
-          Name/Email
-          <Select
-            defaultValue="ascend"
-            style={{ width: 90 }}
-            onChange={(value) => handleSort("name", value)}
-            suffixIcon={<DownOutlined />}
-          >
-            <Option value="ascend">Ascend</Option>
-            <Option value="descend">Descend</Option>
-          </Select>
+          Name/Email <DownOutlined />
         </div>
       ),
-      dataIndex: "email",
+      dataIndex: "user",
       key: "email",
-      render: (text, record) => (
-        <div className="flex gap-2 items-center">
+      render: (userObj) => {
+        const email = userObj?.email ?? "-";
+        const displayName = email && email !== "-" ? String(email).split("@")[0] : "-";
+        return (
+        <div className="flex items-center gap-2">
           <img
             src={user}
-            alt={record.name}
-            className="h-10 w-10 rounded-full"
+            alt={displayName}
+            className="w-10 h-10 rounded-full"
           />
           <div>
-            <p className="font-medium">{record.name}</p>
-            <p className="text-gray-400 text-sm">{record.email}</p>
+            <p className="font-medium">{displayName}</p>
+            <p className="text-sm text-gray-400">{email}</p>
           </div>
         </div>
-      ),
+        );
+      },
     },
     {
       title: (
         <div className="flex items-center gap-2">
-          Type
-          <Select
-            defaultValue="All"
-            style={{ width: 130 }}
-            onChange={handleRoleFilter}
-            suffixIcon={<DownOutlined />}
-          >
-            <Option value="All">All</Option>
-            <Option value="Business">Business</Option>
-            <Option value="Organization">Organization</Option>
-            <Option value="Donor">Donor</Option>
-          </Select>
+          Type <DownOutlined />
         </div>
       ),
-      dataIndex: "donationType",
-      key: "donationType",
+      dataIndex: "planType",
+      key: "planType",
       render: (value) => (
-        <div className="px-4 py-2 rounded-3xl flex items-center gap-2">
-          {value === "Business" && (
-            <div className="flex items-center gap-1 bg-blue-100 text-blue-600 px-4 py-1 rounded-2xl">
-              <MdOtherHouses className="h-5 w-5" /> Business
-            </div>
-          )}
-          {value === "Organization" && (
-            <div className="flex items-center gap-1 bg-green-100 text-green-600 px-4 py-1 rounded-2xl">
-              <GoOrganization className="h-5 w-5" /> Organization
-            </div>
-          )}
-          {value === "Donor" && (
-            <div className="flex items-center gap-1 bg-pink-100 text-pink-600 px-4 py-1 rounded-2xl">
-              <FaUsers className="h-5 w-5" /> Donor
-            </div>
-          )}
-        </div>
+        <span className="inline-flex items-center px-4 py-2 text-xs font-medium text-blue-700 bg-blue-100 rounded-full">
+          {value ? String(value).charAt(0).toUpperCase() + String(value).slice(1) : "-"}
+        </span>
       ),
     },
     {
       title: (
         <div className="flex items-center gap-2">
-          Start Date
-          <Select
-            defaultValue="descend"
-            style={{ width: 100 }}
-            onChange={(value) => handleSort("dateTime", value)}
-            suffixIcon={<DownOutlined />}
-          >
-            <Option value="ascend">Oldest</Option>
-            <Option value="descend">Recent</Option>
-          </Select>
+          Start Date <DownOutlined />
         </div>
       ),
-      dataIndex: "dateTime",
-      key: "dateTime",
+      dataIndex: "startDate",
+      key: "startDate",
+      render: (value) => formatDateTime(value),
     },
     {
       title: (
         <div className="flex items-center gap-2">
-          Renewal Date
-          <Select
-            defaultValue="descend"
-            style={{ width: 100 }}
-            onChange={(value) => handleSort("dateTime", value)}
-            suffixIcon={<DownOutlined />}
-          >
-            <Option value="ascend">Oldest</Option>
-            <Option value="descend">Recent</Option>
-          </Select>
+          Renewal Date <DownOutlined />
         </div>
       ),
-      dataIndex: "dateTime",
-      key: "dateTime",
+      dataIndex: "renewalDate",
+      key: "renewalDate",
+      render: (value) => formatDateTime(value),
     },
 
     {
@@ -264,9 +165,9 @@ const OrganizationSubscription = () => {
       render: (status) => (
         <span
           className={`px-4 py-1 rounded-2xl text-sm font-medium ${
-            status === "Active"
+            String(status).toLowerCase() === "active"
               ? "bg-green-100 text-green-600"
-              : status === "Pending"
+              : String(status).toLowerCase() === "pending" || String(status).toLowerCase() === "trialing"
               ? "bg-yellow-100 text-yellow-600"
               : "bg-gray-200 text-gray-600"
           }`}
@@ -279,19 +180,18 @@ const OrganizationSubscription = () => {
       title: "Action",
       key: "action",
       render: (_, record) => (
-        <div className="flex justify-center items-center gap-3 text-lg">
-          <div className="bg-neutral-100 h-8 w-8 rounded-full p-1 flex justify-center items-center cursor-pointer">
+        <div className="flex items-center justify-center gap-3 text-lg">
+          <div className="flex items-center justify-center w-8 h-8 p-1 rounded-full cursor-pointer bg-neutral-100">
             <VscEye />
           </div>
-          {/* <div
-            onClick={() => handleEdit(record)}
-            className="bg-neutral-100 h-8 w-8 rounded-full p-1 flex justify-center items-center cursor-pointer"
+          <button
+            type="button"
+            onClick={() => handleDownload(record)}
+            className="flex items-center justify-center w-8 h-8 p-1 rounded-full cursor-pointer bg-neutral-100"
+            title="Download"
           >
-            <FaPencilAlt />
-          </div> */}
-          <div className="bg-neutral-100 h-8 w-8 rounded-full p-1 flex justify-center items-center cursor-pointer">
-            <RxCrossCircled />
-          </div>
+            <FiDownload />
+          </button>
         </div>
       ),
     },
@@ -307,31 +207,60 @@ const OrganizationSubscription = () => {
   );
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm mb-10">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold">Subscription listing</h2>
-        <div className="flex items-center gap-2">
-          <Input
-            prefix={<SearchOutlined />}
-            placeholder="Search..."
-            onChange={(e) => setSearchText(e.target.value)}
-            className="w-60"
-          />
+    <div className="mb-10 bg-white border border-gray-100 rounded-3xl">
+      <div className="flex flex-col gap-4 p-6 border-b border-gray-100 md:flex-row md:items-center md:justify-between">
+        <h2 className="text-base font-semibold text-gray-900">Subscription Listing</h2>
+        <div className="flex flex-col items-stretch gap-3 md:flex-row md:items-center">
+          <div className="w-full md:w-[240px]">
+            <div className="flex items-center h-12 px-5 bg-white border border-gray-200 rounded-full [&_.ant-input-affix-wrapper]:!h-full [&_.ant-input-affix-wrapper]:!border-0 [&_.ant-input-affix-wrapper]:!shadow-none [&_.ant-input-affix-wrapper]:!bg-transparent [&_.ant-input-affix-wrapper]:!p-0 [&_.ant-input]:!h-full [&_.ant-input]:!bg-transparent [&_.ant-input]:!text-sm">
+              <Input
+                prefix={<SearchOutlined />}
+                placeholder="Search"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+                bordered={false}
+                allowClear
+              />
+            </div>
+          </div>
+
           <Dropdown overlay={menu} trigger={["click"]}>
-            <Button>
+            <button type="button" className="flex items-center justify-center h-12 gap-2 px-5 bg-white border border-gray-200 rounded-full">
               Filter <DownOutlined />
-            </Button>
+            </button>
           </Dropdown>
-          <DatePicker placeholder="Select interval" />
+
+          <div className="w-full md:w-auto">
+            <div className="flex items-center h-12 px-5 bg-white border border-gray-200 rounded-full [&_.ant-picker]:!border-0 [&_.ant-picker]:!shadow-none [&_.ant-picker]:!bg-transparent [&_.ant-picker]:!p-0 [&_.ant-picker]:!h-full [&_.ant-picker-input_>input]:!text-sm [&_.ant-picker-input_>input]:!h-full">
+              <DatePicker placeholder="Select Interval" bordered={false} />
+            </div>
+          </div>
         </div>
       </div>
 
-      <Table
-        columns={columns}
-        dataSource={filteredData}
-        pagination={{ pageSize: 5 }}
-        rowKey="key"
-      />
+      <div className="">
+        <Table
+          columns={columns}
+          dataSource={Array.isArray(data) ? data : []}
+          loading={isLoading}
+          pagination={{
+            current: pagination?.page || 1,
+            pageSize: pagination?.limit || limit,
+            total: pagination?.total || 0,
+            showSizeChanger: false,
+            showTotal: (total, range) =>
+              `Showing ${range[0]}-${range[1]} from ${String(total).padStart(2, "0")}`,
+            position: ["bottomRight"],
+          }}
+          onChange={(tablePagination) => {
+            setCurrentPage(tablePagination.current);
+          }}
+          rowKey={(row) => row?._id || row?.id || row?.key}
+        />
+      </div>
 
       {/* ✨ Edit Profile Modal */}
       <Modal
@@ -340,6 +269,12 @@ const OrganizationSubscription = () => {
         onCancel={handleCancel}
         footer={null}
         centered
+        styles={{
+          content: {
+            borderRadius: "30px",
+            overflow: "hidden",
+          },
+        }}
       >
         <Form layout="vertical" form={form} onFinish={handleSave}>
           <div className="flex justify-center mb-4">
@@ -348,17 +283,17 @@ const OrganizationSubscription = () => {
               beforeUpload={handleBeforeUpload}
               accept="image/*"
             >
-              <div className="border border-dashed border-gray-300 p-4 rounded-full cursor-pointer flex flex-col items-center">
+              <div className="flex flex-col items-center p-4 border border-gray-300 border-dashed rounded-full cursor-pointer">
                 {previewImage ? (
                   <img
                     src={previewImage}
                     alt="Preview"
-                    className="h-24 w-24 rounded-full object-cover"
+                    className="object-cover w-24 h-24 rounded-full"
                   />
                 ) : (
                   <>
-                    <FaImage className="text-gray-400 h-8 w-8" />
-                    <p className="text-gray-400 text-sm mt-2">Upload Image</p>
+                    <FaImage className="w-8 h-8 text-gray-400" />
+                    <p className="mt-2 text-sm text-gray-400">Upload Image</p>
                   </>
                 )}
               </div>

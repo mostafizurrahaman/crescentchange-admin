@@ -2,7 +2,13 @@
 import { FiSettings } from "react-icons/fi";
 import { LuLayoutDashboard } from "react-icons/lu";
 import { HiOutlineUsers } from "react-icons/hi2";
-import { TbChartBar, TbBuildingCommunity, TbHeartHandshake, TbBriefcase2 } from "react-icons/tb";
+import {
+  TbChartBar,
+  TbBuildingCommunity,
+  TbHeartHandshake,
+  TbBriefcase2,
+  TbCalendarEvent,
+} from "react-icons/tb";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 import logout from "../../assets/image/logout.png";
@@ -14,6 +20,11 @@ const Sidebar = ({ closeDrawer }) => {
   const menuItems = [
     { icon: LuLayoutDashboard, label: "Dashboard", Link: "/" },
     { icon: HiOutlineUsers, label: "User Management", Link: "/user-management" },
+    {
+      icon: TbCalendarEvent,
+      label: "Subscription & Payments",
+      Link: "/subscription-management",
+    },
     { icon: TbChartBar, label: "Analytics", Link: "/analytics" },
     {
       icon: TbBuildingCommunity,

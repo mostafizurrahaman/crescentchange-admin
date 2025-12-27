@@ -27,7 +27,7 @@ const ForgatePassword = lazyLoad(() => import('../Pages/Auth/ForgatePassword/For
 const Newpass = lazyLoad(() => import('../Pages/Auth/NewPass/Newpass'));
 const VerifyPass = lazyLoad(() => import('../Pages/Auth/VerifyPass/VerifyPass'));
 const ContinuePage = lazyLoad(() => import('../Pages/Auth/ContinuePage/ContinuePage'));
-// const Subscription = lazyLoad(() => import('../Pages/Subscription/Subscription'));
+const Subscription = lazyLoad(() => import('../Pages/Subscription/Subscription'));
 const AdminProfile = lazyLoad(() => import('../Pages/AdminProfile/AdminProfile'));
 const Notifications = lazyLoad(() => import('../Pages/Notification/Notification'));
 const AllUsers = lazyLoad(() => import('../Components/UserManagemnet/AllUsers/AllUsers'));
@@ -104,10 +104,10 @@ export const router = createBrowserRouter([
         path: "/organization-management",
         element: <AllOrganization />,
       },
-      // {
-      //   path: "/subdcription-management",
-      //   element: <Subscription />,
-      // },
+      {
+        path: "/subscription-management",
+        element: <Subscription />,
+      },
       {
         path: "/analytics",
         element: <AnalyticsRoute />,

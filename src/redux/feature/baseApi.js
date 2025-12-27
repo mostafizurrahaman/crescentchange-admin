@@ -5,6 +5,7 @@ import {
 import { SetAccessToken } from "./auth/authSlice";
 
 export const baseApiUrl = "http://13.55.115.124:5000/api/v1";
+// export const baseApiUrl = "https://nickname-pretty-introduce-communities.trycloudflare.com/api/v1";
 
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: baseApiUrl,

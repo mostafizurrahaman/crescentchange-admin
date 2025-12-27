@@ -1,102 +1,101 @@
-/* eslint-disable no-unused-vars */
-import { message, Modal } from "antd";
-import { useState } from "react";
-import { FaArrowDown, FaPlus, FaTrash } from "react-icons/fa";
-import { FaRegPenToSquare } from "react-icons/fa6";
-import AddSubscription from "../../Components/SubscriptionManagement/AddSubscription/AddSubscription";
-import MessageCost from "./MessageCost/MessageCost";
-import EditSubscription from "../../Components/SubscriptionManagement/EditSubscription/EditSubscription";
+ 
 import OrganizationSubscription from "../../Components/ManageSubscription/OrganizationSubscription";
-import DonorsSubscription from "../../Components/ManageSubscription/SubscriptionAndPaymentExport";
 import { BsArrowUpRight } from "react-icons/bs";
 import { Link } from "react-router-dom";
+import { useGetSubscriptionPaymentStatsQuery } from "../../redux/feature/subscription/subscriptionApis";
 
 const Subscription = () => {
-  const [showModal, setShowModal] = useState(false);
+  const { data: statsRes } = useGetSubscriptionPaymentStatsQuery();
 
-  const handleShowModal = () => {
-    setShowModal(true);
-  };
-  const handleCancel = () => {
-    setShowModal(false);
-  };
+  const activeSubscribers = statsRes?.data?.activeSubscribers ?? 0;
+  const breakDownByRole = Array.isArray(statsRes?.data?.breakDownByRole)
+    ? statsRes.data.breakDownByRole
+    : [];
 
-  const handleDelet = () => {
-    message.success("Deleted Successfully");
-  };
+  const donorCount = breakDownByRole.find((r) => r?.role === "DONOR")?.count ?? 0;
+  const businessCount = breakDownByRole.find((r) => r?.role === "BUSINESS")?.count ?? 0;
+  const organizationCount = breakDownByRole.find((r) => r?.role === "ORGANIZATION")?.count ?? 0;
+  const breakdownTotal = donorCount + businessCount + organizationCount || 1;
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="min-h-screen bg-gray-50">
       {/* ---------- Top Title ---------- */}
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-semibold">Subscription & Payments</h1>
-          <p className="text-neutral-400">
+      <div className="flex flex-col gap-6 mb-8 md:flex-row md:items-start md:justify-between">
+        <div className="w-full">
+          <h1 className="text-3xl font-bold text-gray-900">Subscription & Payments</h1>
+          <p className="mt-2 text-base text-gray-500">
             Track all subscriptions, manage invoices, and export payment data.
           </p>
         </div>
-        <button className="bg-white px-4 py-2 rounded-3xl border flex justify-between items-center gap-2">
-          <FaArrowDown /> Export
-        </button>
       </div>
-      <div className="grid grid-cols-2 gap-4 mb-8 ">
-        <div className="bg-gray-100 p-6 rounded-3xl">
-          <div className="flex justify-between items-center gap-2 mb-20">
-            <div>
-              <p className="tetx-xl font-semibold">Overview</p>
-            </div>
+
+      <div className="grid grid-cols-1 gap-4 mb-8 lg:grid-cols-2">
+        <div className="p-6 bg-white border border-gray-100 shadow-sm rounded-3xl">
+          <div className="flex items-center justify-between gap-2 mb-14">
+            <div className="text-base font-semibold text-gray-900">Overview</div>
             <Link to="/donationQuickLink">
-              <div className="bg-white rounded-full h-10 w-10 p-1 flex justify-center items-center">
+              <div className="flex items-center justify-center w-10 h-10 p-1 bg-white rounded-full">
                 <BsArrowUpRight />
               </div>
             </Link>
           </div>
 
-          <p className="text-neutral-400 text-2xl">
-            1,420
-            <span className="text-green-500 text-sm">Active</span>{" "}
-            <span className="text-sm ">
-              {" "}
-              subscriptions across donors, businesses, and organizations.
-            </span>
-          </p>
+          <div className="flex items-end gap-3">
+            <div className="text-4xl font-bold text-gray-900">{activeSubscribers}</div>
+            <div className="pb-1">
+              <span className="text-sm font-medium text-emerald-600">Active</span>
+              <span className="text-sm text-gray-400">
+                {" "}
+                subscriptions across donors, businesses, and organizations.
+              </span>
+            </div>
+          </div>
         </div>
 
-        <div className="bg-gray-100 p-6 rounded-3xl">
-          <p className="text-xl font-semibold mb-20">Breakdown</p>
-          <div className="my-6 flex justify-center items-center gap-2">
-            <div className="h-10 w-[50%] bg-pink-200 rounded-xl"></div>
-            <div className="h-10 w-[25%] bg-blue-200 rounded-xl"></div>
-            <div className="h-10 w-[25%] bg-green-200 rounded-xl"></div>
+        <div className="p-6 bg-white border border-gray-100 shadow-sm rounded-3xl">
+          <div className="text-base font-semibold text-gray-900">Breakdown</div>
+          <div className="flex items-center justify-center gap-2 mt-6">
+            <div
+              className="h-12 bg-pink-100 rounded-2xl"
+              style={{ width: `${Math.round((donorCount / breakdownTotal) * 100)}%` }}
+            />
+            <div
+              className="h-12 bg-sky-200 rounded-2xl"
+              style={{ width: `${Math.round((businessCount / breakdownTotal) * 100)}%` }}
+            />
+            <div
+              className="h-12 bg-emerald-200 rounded-2xl"
+              style={{ width: `${Math.round((organizationCount / breakdownTotal) * 100)}%` }}
+            />
           </div>
-          <div className="flex justify-between items-center gap-3">
+
+          <div className="grid grid-cols-3 gap-6 mt-6">
             <div>
-              <div className="flex justify-center items-center gap-1">
-                <div className="h-2 w-2 bg-pink-200"></div>
-                <p>Donor</p>
+              <div className="flex items-center gap-2 text-xs text-gray-400">
+                <span className="w-2 h-2 bg-pink-100 rounded-sm" />
+                Donor
               </div>
-              <h1 className="text-2xl font-bold">500</h1>
+              <div className="mt-2 text-xl font-semibold text-gray-900">{donorCount}</div>
             </div>
             <div>
-              <div className="flex justify-center items-center gap-1">
-                <div className="h-2 w-2 bg-blue-200"></div>
-                <p>Business</p>
+              <div className="flex items-center gap-2 text-xs text-gray-400">
+                <span className="w-2 h-2 rounded-sm bg-sky-200" />
+                Business
               </div>
-              <h1 className="text-2xl font-bold">500</h1>
+              <div className="mt-2 text-xl font-semibold text-gray-900">{businessCount}</div>
             </div>
             <div>
-              <div className="flex justify-center items-center gap-1">
-                <div className="h-2 w-2 bg-green-200"></div>
-                <p>Organization</p>
+              <div className="flex items-center gap-2 text-xs text-gray-400">
+                <span className="w-2 h-2 rounded-sm bg-emerald-200" />
+                Organization
               </div>
-              <h1 className="text-2xl font-bold">500</h1>
+              <div className="mt-2 text-xl font-semibold text-gray-900">{organizationCount}</div>
             </div>
           </div>
         </div>
       </div>
 
       <OrganizationSubscription />
-      <DonorsSubscription />
     </div>
   );
 };

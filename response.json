@@ -1,0 +1,174 @@
+{
+    "success": true,
+    "message": "Subscriptions retrieved successfully!",
+    "meta": {
+        "total": 6,
+        "page": 1,
+        "limit": 10
+    },
+    "data": [
+        {
+            "_id": "694f849c2ce065f0b978575f",
+            "user": {
+                "_id": "694f84982ce065f0b9785757",
+                "email": "azmirdroid@gmail.com",
+                "role": "BUSINESS"
+            },
+            "planType": "trial",
+            "status": "trialing",
+            "createdAt": "2025-12-27T07:02:52.708Z",
+            "latestPayment": {
+                "amount": 0,
+                "currency": "usd",
+                "status": "succeeded",
+                "transactionDate": "2025-12-27T07:02:52.916Z"
+            },
+            "totalPaid": 0,
+            "business": {
+                "_id": "694f84992ce065f0b9785759",
+                "name": "Auto",
+                "category": "Auto Services"
+            },
+            "startDate": "2025-12-27T07:02:52.708Z",
+            "renewalDate": "2026-06-27T07:02:52.708Z",
+            "isCanceled": false
+        },
+        {
+            "_id": "694f8059bcffba308569f3dc",
+            "user": {
+                "_id": "6942d3bfaf3e0d14a9fdf597",
+                "email": "org1@yopmail.com",
+                "role": "ORGANIZATION"
+            },
+            "createdAt": "2025-12-27T06:44:39.600Z",
+            "planType": "trial",
+            "status": "active",
+            "latestPayment": {
+                "amount": 20,
+                "currency": "usd",
+                "status": "succeeded",
+                "invoiceUrl": "https://invoice.stripe.com/i/acct_1SeqcMKNMJBzPh0p/test_YWNjdF8xU2VxY01LTk1KQnpQaDBwLF9UZ0RnZzBjaHoxZFcxaGtIMElrakF2Rzh5MU4xbktjLDE1NzM1ODY4Mg0200dojsaJvY?s=ap",
+                "transactionDate": "2025-12-27T06:44:40.254Z"
+            },
+            "totalPaid": 20,
+            "organization": {
+                "_id": "6942d3bfaf3e0d14a9fdf599",
+                "name": "ALFALAH CATIRY",
+                "serviceType": "non-profit",
+                "country": "",
+                "logoImage": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/profiles/organizations/6942d3bfaf3e0d14a9fdf597-1766481606700"
+            },
+            "startDate": "2025-12-27T06:44:37.000Z",
+            "renewalDate": "2026-01-27T06:44:37.000Z",
+            "isCanceled": false
+        },
+        {
+            "_id": "694f7e7692a801fd28a45614",
+            "user": {
+                "_id": "694f7e7292a801fd28a4560e",
+                "email": "org105@yopmail.com",
+                "role": "ORGANIZATION"
+            },
+            "planType": "trial",
+            "status": "trialing",
+            "createdAt": "2025-12-27T06:36:38.827Z",
+            "latestPayment": {
+                "amount": 0,
+                "currency": "usd",
+                "status": "succeeded",
+                "transactionDate": "2025-12-27T06:36:38.901Z"
+            },
+            "totalPaid": 0,
+            "organization": {
+                "_id": "694f7e7392a801fd28a45610",
+                "name": "ALFALAH CATIRY",
+                "serviceType": "non-profit",
+                "country": "",
+                "logoImage": null
+            },
+            "startDate": "2025-12-27T06:36:38.826Z",
+            "renewalDate": "2026-06-27T06:36:38.824Z",
+            "isCanceled": false
+        },
+        {
+            "_id": "694e9669bc9db169d1d4ab1c",
+            "user": {
+                "_id": "694e9664bc9db169d1d4ab18",
+                "email": "fahim56@yopmail.com",
+                "role": "BUSINESS"
+            },
+            "planType": "trial",
+            "status": "trialing",
+            "createdAt": "2025-12-26T14:06:33.427Z",
+            "latestPayment": {
+                "amount": 0,
+                "currency": "usd",
+                "status": "succeeded",
+                "transactionDate": "2025-12-26T14:06:33.474Z"
+            },
+            "totalPaid": 0,
+            "business": {
+                "_id": "694e9665bc9db169d1d4ab1a",
+                "name": "Mosafizur Rahaman",
+                "category": "Food",
+                "logoImage": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/profiles/businesses/logo-1766757988069"
+            },
+            "startDate": "2025-12-26T14:06:33.426Z",
+            "renewalDate": "2026-06-26T14:29:21.082Z",
+            "isCanceled": false
+        },
+        {
+            "_id": "694e719147295e5af680e3d9",
+            "user": {
+                "_id": "694e718d47295e5af680e37b",
+                "email": "ami@yopmail.com",
+                "role": "BUSINESS"
+            },
+            "planType": "trial",
+            "status": "trialing",
+            "createdAt": "2025-12-26T11:29:21.083Z",
+            "latestPayment": {
+                "amount": 0,
+                "currency": "usd",
+                "status": "succeeded",
+                "transactionDate": "2025-12-26T11:29:21.164Z"
+            },
+            "totalPaid": 0,
+            "business": {
+                "_id": "694e718d47295e5af680e399",
+                "name": "TechMart BD",
+                "category": "Electronics"
+            },
+            "startDate": "2025-12-26T11:29:21.082Z",
+            "renewalDate": "2026-06-26T11:29:21.082Z",
+            "isCanceled": false
+        },
+        {
+            "_id": "694e68712c7968cfc7d0f762",
+            "user": {
+                "_id": "694e686e2c7968cfc7d0f75e",
+                "email": "mostafizbusiness@yopmail.com",
+                "role": "BUSINESS"
+            },
+            "planType": "trial",
+            "status": "active",
+            "createdAt": "2025-12-26T10:50:25.030Z",
+            "latestPayment": {
+                "amount": 0,
+                "currency": "usd",
+                "status": "succeeded",
+                "invoiceUrl": "https://invoice.stripe.com/i/acct_1SeqcMKNMJBzPh0p/test_YWNjdF8xU2VxY01LTk1KQnpQaDBwLF9UZnVTYkhLRHNoRUdDbTFvbVI4dkdBSTAzcEFneXo4LDE1NzI4NzE5OA02003wParFcn?s=ap",
+                "transactionDate": "2025-12-26T10:53:18.218Z"
+            },
+            "totalPaid": 0,
+            "business": {
+                "_id": "694e686e2c7968cfc7d0f760",
+                "name": "TechMart BD",
+                "category": "Electronics"
+            },
+            "startDate": "2025-12-26T10:53:15.000Z",
+            "renewalDate": "2025-12-26T10:53:15.000Z",
+            "isCanceled": false
+        }
+    ]
+}
