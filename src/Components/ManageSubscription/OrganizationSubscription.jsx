@@ -2,16 +2,14 @@ import { useState } from "react";
 import {
   Button,
   DatePicker,
-  Dropdown,
   Form,
   Input,
-  Menu,
   Modal,
   Table,
   Upload,
   message,
 } from "antd";
-import { DownOutlined, SearchOutlined } from "@ant-design/icons";
+import { SearchOutlined } from "@ant-design/icons";
 import { VscEye } from "react-icons/vsc";
 import user from "../../assets/image/user.png";
 import { FaImage } from "react-icons/fa";
@@ -20,14 +18,21 @@ import { FiDownload } from "react-icons/fi";
 import { useGetSubscriptionPaymentsQuery } from "../../redux/feature/subscription/subscriptionApis";
 
 const OrganizationSubscription = () => {
+  const { RangePicker } = DatePicker;
+
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [limit] = useState(5);
+  const [dateRange, setDateRange] = useState(null);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const { data: listRes, isLoading } = useGetSubscriptionPaymentsQuery({
     page: currentPage,
     limit,
     searchTerm,
+    startDate,
+    endDate,
   });
 
   const data = Array.isArray(listRes?.data) ? listRes.data : [];
@@ -37,6 +42,9 @@ const OrganizationSubscription = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
   const [form] = Form.useForm();
+
+  const [isViewOpen, setIsViewOpen] = useState(false);
+  const [selectedSubscription, setSelectedSubscription] = useState(null);
 
   // 📸 Handle image upload
   const handleBeforeUpload = (file) => {
@@ -53,6 +61,24 @@ const OrganizationSubscription = () => {
 
   const handleSave = (_values) => {
     setIsModalVisible(false);
+  };
+
+  const handleView = (record) => {
+    setSelectedSubscription(record);
+    setIsViewOpen(true);
+  };
+
+  const handleDateRangeChange = (dates, dateStrings) => {
+    setDateRange(dates);
+    setCurrentPage(1);
+
+    if (dates && dates[0] && dates[1]) {
+      setStartDate(dateStrings?.[0] || "");
+      setEndDate(dateStrings?.[1] || "");
+    } else {
+      setStartDate("");
+      setEndDate("");
+    }
   };
 
   const handleDownload = (record) => {
@@ -96,13 +122,17 @@ const OrganizationSubscription = () => {
     );
   };
 
+  const planTypeFilterOptions = Array.from(
+    new Set((Array.isArray(data) ? data : []).map((r) => r?.planType).filter(Boolean))
+  ).map((v) => ({ text: String(v), value: v }));
+
+  const statusFilterOptions = Array.from(
+    new Set((Array.isArray(data) ? data : []).map((r) => r?.status).filter(Boolean))
+  ).map((v) => ({ text: String(v), value: v }));
+
   const columns = [
     {
-      title: (
-        <div className="flex items-center gap-2">
-          Name/Email <DownOutlined />
-        </div>
-      ),
+      title: "Name/Email",
       dataIndex: "user",
       key: "email",
       render: (userObj) => {
@@ -124,13 +154,11 @@ const OrganizationSubscription = () => {
       },
     },
     {
-      title: (
-        <div className="flex items-center gap-2">
-          Type <DownOutlined />
-        </div>
-      ),
+      title: "Type",
       dataIndex: "planType",
       key: "planType",
+      filters: planTypeFilterOptions,
+      onFilter: (value, record) => String(record?.planType || "") === String(value),
       render: (value) => (
         <span className="inline-flex items-center px-4 py-2 text-xs font-medium text-blue-700 bg-blue-100 rounded-full">
           {value ? String(value).charAt(0).toUpperCase() + String(value).slice(1) : "-"}
@@ -138,21 +166,13 @@ const OrganizationSubscription = () => {
       ),
     },
     {
-      title: (
-        <div className="flex items-center gap-2">
-          Start Date <DownOutlined />
-        </div>
-      ),
+      title: "Start Date",
       dataIndex: "startDate",
       key: "startDate",
       render: (value) => formatDateTime(value),
     },
     {
-      title: (
-        <div className="flex items-center gap-2">
-          Renewal Date <DownOutlined />
-        </div>
-      ),
+      title: "Renewal Date",
       dataIndex: "renewalDate",
       key: "renewalDate",
       render: (value) => formatDateTime(value),
@@ -162,6 +182,8 @@ const OrganizationSubscription = () => {
       title: "Status",
       dataIndex: "status",
       key: "status",
+      filters: statusFilterOptions,
+      onFilter: (value, record) => String(record?.status || "") === String(value),
       render: (status) => (
         <span
           className={`px-4 py-1 rounded-2xl text-sm font-medium ${
@@ -181,9 +203,14 @@ const OrganizationSubscription = () => {
       key: "action",
       render: (_, record) => (
         <div className="flex items-center justify-center gap-3 text-lg">
-          <div className="flex items-center justify-center w-8 h-8 p-1 rounded-full cursor-pointer bg-neutral-100">
+          <button
+            type="button"
+            onClick={() => handleView(record)}
+            className="flex items-center justify-center w-8 h-8 p-1 rounded-full cursor-pointer bg-neutral-100"
+            title="View"
+          >
             <VscEye />
-          </div>
+          </button>
           <button
             type="button"
             onClick={() => handleDownload(record)}
@@ -197,22 +224,13 @@ const OrganizationSubscription = () => {
     },
   ];
 
-  const menu = (
-    <Menu>
-      <Menu.Item>Sort A - Z</Menu.Item>
-      <Menu.Item>Sort Z - A</Menu.Item>
-      <Menu.Item>Recent First</Menu.Item>
-      <Menu.Item>Oldest First</Menu.Item>
-    </Menu>
-  );
-
   return (
     <div className="mb-10 bg-white border border-gray-100 rounded-3xl">
       <div className="flex flex-col gap-4 p-6 border-b border-gray-100 md:flex-row md:items-center md:justify-between">
         <h2 className="text-base font-semibold text-gray-900">Subscription Listing</h2>
         <div className="flex flex-col items-stretch gap-3 md:flex-row md:items-center">
-          <div className="w-full md:w-[240px]">
-            <div className="flex items-center h-12 px-5 bg-white border border-gray-200 rounded-full [&_.ant-input-affix-wrapper]:!h-full [&_.ant-input-affix-wrapper]:!border-0 [&_.ant-input-affix-wrapper]:!shadow-none [&_.ant-input-affix-wrapper]:!bg-transparent [&_.ant-input-affix-wrapper]:!p-0 [&_.ant-input]:!h-full [&_.ant-input]:!bg-transparent [&_.ant-input]:!text-sm">
+          <div className="w-full md:w-[220px]">
+            <div className="px-4 py-2 bg-white border border-gray-200 rounded-full [&_.ant-input-affix-wrapper]:!border-0 [&_.ant-input-affix-wrapper]:!shadow-none [&_.ant-input-affix-wrapper]:!bg-transparent [&_.ant-input]:!bg-transparent [&_.ant-input]:!text-sm">
               <Input
                 prefix={<SearchOutlined />}
                 placeholder="Search"
@@ -227,15 +245,14 @@ const OrganizationSubscription = () => {
             </div>
           </div>
 
-          <Dropdown overlay={menu} trigger={["click"]}>
-            <button type="button" className="flex items-center justify-center h-12 gap-2 px-5 bg-white border border-gray-200 rounded-full">
-              Filter <DownOutlined />
-            </button>
-          </Dropdown>
-
           <div className="w-full md:w-auto">
-            <div className="flex items-center h-12 px-5 bg-white border border-gray-200 rounded-full [&_.ant-picker]:!border-0 [&_.ant-picker]:!shadow-none [&_.ant-picker]:!bg-transparent [&_.ant-picker]:!p-0 [&_.ant-picker]:!h-full [&_.ant-picker-input_>input]:!text-sm [&_.ant-picker-input_>input]:!h-full">
-              <DatePicker placeholder="Select Interval" bordered={false} />
+            <div className="px-4 py-2 bg-white border border-gray-200 rounded-full [&_.ant-picker]:!border-0 [&_.ant-picker]:!shadow-none [&_.ant-picker]:!bg-transparent [&_.ant-picker-input_>input]:!text-sm">
+              <RangePicker
+                placeholder={["Select Interval", ""]}
+                bordered={false}
+                onChange={handleDateRangeChange}
+                value={dateRange}
+              />
             </div>
           </div>
         </div>
@@ -335,6 +352,88 @@ const OrganizationSubscription = () => {
             </Button>
           </div>
         </Form>
+      </Modal>
+
+      <Modal
+        title="Subscription Details"
+        open={isViewOpen}
+        onCancel={() => setIsViewOpen(false)}
+        footer={null}
+        centered
+        styles={{
+          content: {
+            borderRadius: "30px",
+            overflow: "hidden",
+          },
+        }}
+      >
+        {selectedSubscription ? (
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <img
+                src={user}
+                alt={selectedSubscription?.user?.email}
+                className="w-12 h-12 rounded-full"
+              />
+              <div>
+                <div className="text-sm font-semibold text-gray-900">
+                  {selectedSubscription?.user?.email?.split("@")[0] || "-"}
+                </div>
+                <div className="text-xs text-gray-500">{selectedSubscription?.user?.email || "-"}</div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-3 bg-gray-50 rounded-2xl">
+                <div className="text-xs text-gray-500">Type</div>
+                <div className="mt-1 text-sm font-semibold text-gray-900">
+                  {selectedSubscription?.planType || "-"}
+                </div>
+              </div>
+              <div className="p-3 bg-gray-50 rounded-2xl">
+                <div className="text-xs text-gray-500">Status</div>
+                <div className="mt-1 text-sm font-semibold text-gray-900">
+                  {selectedSubscription?.status || "-"}
+                </div>
+              </div>
+              <div className="p-3 bg-gray-50 rounded-2xl">
+                <div className="text-xs text-gray-500">Start Date</div>
+                <div className="mt-1 text-sm font-semibold text-gray-900">
+                  {selectedSubscription?.startDate
+                    ? new Date(selectedSubscription.startDate).toLocaleDateString()
+                    : "-"}
+                </div>
+              </div>
+              <div className="p-3 bg-gray-50 rounded-2xl">
+                <div className="text-xs text-gray-500">Renewal Date</div>
+                <div className="mt-1 text-sm font-semibold text-gray-900">
+                  {selectedSubscription?.renewalDate
+                    ? new Date(selectedSubscription.renewalDate).toLocaleDateString()
+                    : "-"}
+                </div>
+              </div>
+            </div>
+
+            <div className="p-3 bg-gray-50 rounded-2xl">
+              <div className="text-xs text-gray-500">Latest Payment</div>
+              <div className="flex items-center justify-between gap-3 mt-1">
+                <div className="text-sm font-semibold text-gray-900">
+                  {selectedSubscription?.latestPayment?.amount ?? "-"} {selectedSubscription?.latestPayment?.currency || ""}
+                </div>
+                {selectedSubscription?.latestPayment?.invoiceUrl ? (
+                  <a
+                    href={selectedSubscription.latestPayment.invoiceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs font-medium text-blue-600"
+                  >
+                    View Invoice
+                  </a>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        ) : null}
       </Modal>
     </div>
   );
