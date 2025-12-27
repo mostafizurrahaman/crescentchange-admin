@@ -302,7 +302,7 @@ const OrganizationSubscription = ({ setExportHandler }) => {
         </div>
       </div>
 
-      <div className="">
+      <div className="p-6">
         <Table
           columns={columns}
           dataSource={Array.isArray(data) ? data : []}

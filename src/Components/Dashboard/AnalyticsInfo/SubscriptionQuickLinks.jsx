@@ -1,13 +1,16 @@
  
-import { Table, DatePicker, Modal, Button } from "antd";
+import { Table, DatePicker, Modal, Button, Input } from "antd";
 // import { MoreOutlined } from "@ant-design/icons";
 import { VscEye } from "react-icons/vsc";
 import user from "../../../assets/image/user.png";
 
 import { SlArrowLeft } from "react-icons/sl";
 import DonorsSubscription from "../../ManageSubscription/SubscriptionAndPaymentExport";
-import { useGetSubscriptionDataQuery } from "../../../redux/feature/subscription/subscriptionApis.js";
-import Search from "antd/es/input/Search";
+import {
+  useGetSubscriptionOverviewQuery,
+  useGetSubscriptionPaymentsQuery,
+} from "../../../redux/feature/subscription/subscriptionApis.js";
+import { SearchOutlined } from "@ant-design/icons";
 import { useState } from "react";
 const SubscriptionQuickLinks = () => {
   const { RangePicker } = DatePicker;
@@ -21,21 +24,21 @@ const SubscriptionQuickLinks = () => {
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [selectedSubscription, setSelectedSubscription] = useState(null);
 
-  const queryArgs = {
+  const { data: overviewRes } = useGetSubscriptionOverviewQuery();
+  const overview = overviewRes?.data;
+
+  const { data: listRes, isLoading } = useGetSubscriptionPaymentsQuery({
     page: currentPage,
     limit: 10,
     searchTerm: searchTerm || undefined,
-    startDate: dateRange?.[0] || undefined,
-    endDate: dateRange?.[1] || undefined,
+    fromDate: dateRange?.[0] || undefined,
+    toDate: dateRange?.[1] || undefined,
     sortBy: sortBy || undefined,
     sortOrder: sortOrder || undefined,
-  };
+  });
 
-  const { data: subscriptionRes, isLoading } = useGetSubscriptionDataQuery(queryArgs);
-
-  const donationRes = subscriptionRes?.data;
-  const apiData = donationRes?.subscriptionDonationHistory || [];
-  const meta = donationRes?.meta;
+  const tableData = Array.isArray(listRes?.data) ? listRes.data : [];
+  const meta = listRes?.meta ?? {};
 
   const handleOpenView = (record) => {
     setSelectedSubscription(record);
@@ -47,92 +50,79 @@ const SubscriptionQuickLinks = () => {
     setSelectedSubscription(null);
   };
 
-  const tableData =
-    apiData.map((item, idx) => ({
-      key: item?.createdAt || String(idx),
-      donorName: item?.donor?.name || "-",
-      organizationName: item?.organization?.name || "-",
-      cause: item?.cause || "-",
-      dateTime: item?.createdAt,
-      amount: Number(item?.amount) || 0,
-      status: item?.status || "-",
-      donationType: item?.donationType || "-",
-      specialMessage: item?.specialMessage || "-",
-    })) || [];
+  const formatDateTime = (value) => {
+    if (!value) return "-";
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return "-";
+    const date = d.toLocaleDateString(undefined, {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+    const time = d.toLocaleTimeString(undefined, {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    return (
+      <div>
+        <div className="text-sm font-medium text-gray-900">{date}</div>
+        <div className="text-xs text-gray-400">{time}</div>
+      </div>
+    );
+  };
 
 
   const columns = [
     {
       title: "Name/Email",
-      dataIndex: "donorName",
-      key: "donorName",
+      dataIndex: "user",
+      key: "email",
       sorter: true,
-      render: (_text, record) => (
-        <div className="flex items-center gap-3">
-          <img
-            src={user}
-            alt={record.donorName}
-            className="w-10 h-10 rounded-full"
-          />
-          <div>
-            <p className="text-sm font-semibold text-gray-900">{record.donorName}</p>
-            <p className="text-xs text-gray-500">{record.organizationName}</p>
+      render: (userObj) => {
+        const email = userObj?.email ?? "-";
+        const displayName = email && email !== "-" ? String(email).split("@")[0] : "-";
+        return (
+          <div className="flex items-center gap-3">
+            <img
+              src={user}
+              alt={displayName}
+              className="w-10 h-10 rounded-full"
+            />
+            <div>
+              <p className="text-sm font-semibold text-gray-900">{displayName}</p>
+              <p className="text-xs text-gray-500">{email}</p>
+            </div>
           </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       title: "Type",
-      dataIndex: "donationType",
-      key: "donationType",
+      dataIndex: "planType",
+      key: "planType",
       render: (value) => (
         <span
           className={
-            value === "recurring"
-              ? "inline-flex items-center rounded-full bg-emerald-100 px-4 py-2 text-xs font-medium text-emerald-700 capitalize"
-              : value === "round-up"
-              ? "inline-flex items-center rounded-full bg-sky-100 px-4 py-2 text-xs font-medium text-sky-700 capitalize"
-              : "inline-flex items-center rounded-full bg-fuchsia-100 px-4 py-2 text-xs font-medium text-fuchsia-700 capitalize"
+            "inline-flex items-center rounded-full bg-blue-100 px-4 py-2 text-xs font-medium text-blue-700 capitalize"
           }
         >
           {value || "-"}
         </span>
       ),
     },
-
     {
-      title: "Amount",
-      dataIndex: "amount",
-      key: "amount",
+      title: "Start Date",
+      dataIndex: "startDate",
+      key: "startDate",
       sorter: true,
-      render: (amount) => (
-        <p className="font-medium">${Number(amount || 0).toFixed(2)}</p>
-      ),
+      render: (value) => formatDateTime(value),
     },
     {
-      title: "Date & Time",
-      dataIndex: "dateTime",
-      key: "dateTime",
+      title: "Renewal Date",
+      dataIndex: "renewalDate",
+      key: "renewalDate",
       sorter: true,
-      render: (dateTime) => {
-        if (!dateTime) return <p className="font-medium">-</p>;
-
-        const dt = new Date(dateTime);
-        return (
-          <div className="leading-tight">
-            <p className="text-base font-semibold text-gray-900">{dt.toLocaleDateString()}</p>
-            <p className="mt-1 text-sm text-gray-500">
-              {dt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-            </p>
-          </div>
-        );
-      },
-    },
-    {
-      title: "Message",
-      dataIndex: "specialMessage",
-      key: "specialMessage",
-      render: (msg) => <p className="text-sm text-gray-700">{msg || "-"}</p>,
+      render: (value) => formatDateTime(value),
     },
     {
       title: "Status",
@@ -190,7 +180,7 @@ const SubscriptionQuickLinks = () => {
           <div className="p-6 bg-white border rounded-3xl">
             <p className="text-lg font-medium">Active Subscriptions</p>
             <h1 className="mt-10 text-2xl font-medium">
-              {donationRes?.totalActiveSubscriptions ?? 0}
+              {overview?.activeCnt ?? 0}
               {/* API does not provide change text vs last month */}
             </h1>
           </div>
@@ -198,14 +188,14 @@ const SubscriptionQuickLinks = () => {
           <div className="p-6 bg-white border rounded-3xl">
             <p className="text-lg font-medium">Canceled Subscriptions</p>
             <h1 className="mt-10 text-2xl font-medium">
-              {donationRes?.totalCancelledSubscriptions ?? 0}
+              {overview?.cancelCnt ?? 0}
               {/* <span className="text-sm text-gray-400">vs last month</span> */}
             </h1>
           </div>
           <div className="p-6 bg-white border rounded-3xl">
             <p className="text-lg font-medium">Renewal Rate</p>
             <h1 className="mt-10 text-2xl font-medium">
-              {donationRes?.monthlyRenewalRate ?? 0}%
+              {overview?.renewRate ?? 0}%
               {/* <span className="text-sm text-gray-400">vs last month</span> */}
             </h1>
           </div>
@@ -219,7 +209,8 @@ const SubscriptionQuickLinks = () => {
           <div className="flex flex-col items-stretch gap-3 md:flex-row md:items-center">
             <div className="w-full md:w-[220px]">
               <div className="px-4 py-2 bg-white border border-gray-200 rounded-full [&_.ant-input-affix-wrapper]:!border-0 [&_.ant-input-affix-wrapper]:!shadow-none [&_.ant-input-affix-wrapper]:!bg-transparent [&_.ant-input]:!bg-transparent [&_.ant-input]:!text-sm">
-                <Search
+                <Input
+                  prefix={<SearchOutlined />}
                   placeholder="Search"
                   allowClear
                   bordered={false}
@@ -235,7 +226,7 @@ const SubscriptionQuickLinks = () => {
             <div className="w-full md:w-auto">
               <div className="px-4 py-2 bg-white border border-gray-200 rounded-full [&_.ant-picker]:!border-0 [&_.ant-picker]:!shadow-none [&_.ant-picker]:!bg-transparent [&_.ant-picker-input_>input]:!text-sm">
                 <RangePicker
-                  placeholder={["Start date", "End date"]}
+                  placeholder={["Select Interval", ""]}
                   bordered={false}
                   onChange={(dates, dateStrings) => {
                     if (dates && dates.length === 2) {
@@ -254,9 +245,9 @@ const SubscriptionQuickLinks = () => {
 
         <Table
           columns={columns}
-          dataSource={tableData}
+          dataSource={Array.isArray(tableData) ? tableData : []}
           loading={isLoading}
-          onChange={(pagination, filters, sorter) => {
+          onChange={(pagination, _filters, sorter) => {
             setCurrentPage(pagination.current);
             if (sorter?.field) {
               setSortBy(sorter.field);
@@ -273,6 +264,7 @@ const SubscriptionQuickLinks = () => {
             showTotal: (total, range) => `Showing ${range[0]}-${range[1]} from ${total}`,
           }}
           style={{ marginTop: 16 }}
+          rowKey={(row) => row?._id || row?.id || row?.key}
         />
 
         <Modal
@@ -290,45 +282,37 @@ const SubscriptionQuickLinks = () => {
           {selectedSubscription ? (
             <div className="space-y-4">
               <div className="p-4 border rounded-xl bg-gray-50">
-                <p className="text-xs text-gray-500">Donor</p>
-                <p className="text-base font-semibold text-gray-900">{selectedSubscription.donorName}</p>
-                <p className="text-sm text-gray-600">Organization: {selectedSubscription.organizationName}</p>
+                <p className="text-xs text-gray-500">User</p>
+                <p className="text-base font-semibold text-gray-900">
+                  {selectedSubscription?.user?.email ? String(selectedSubscription.user.email).split("@")[0] : "-"}
+                </p>
+                <p className="text-sm text-gray-600">Email: {selectedSubscription?.user?.email || "-"}</p>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-4 border rounded-xl">
-                  <p className="text-xs text-gray-500">Amount</p>
-                  <p className="text-lg font-bold text-gray-900">${Number(selectedSubscription.amount || 0).toFixed(2)}</p>
-                </div>
                 <div className="p-4 border rounded-xl">
                   <p className="text-xs text-gray-500">Type</p>
-                  <p className="text-sm font-semibold text-gray-900 capitalize">{selectedSubscription.donationType || "-"}</p>
+                  <p className="text-sm font-semibold text-gray-900 capitalize">{selectedSubscription.planType || "-"}</p>
                 </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
                 <div className="p-4 border rounded-xl">
                   <p className="text-xs text-gray-500">Status</p>
                   <p className="text-sm font-semibold text-gray-900 capitalize">{selectedSubscription.status || "-"}</p>
                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
                 <div className="p-4 border rounded-xl">
-                  <p className="text-xs text-gray-500">Date & Time</p>
+                  <p className="text-xs text-gray-500">Start Date</p>
                   <p className="text-sm font-semibold text-gray-900">
-                    {selectedSubscription.dateTime ? new Date(selectedSubscription.dateTime).toLocaleString() : "-"}
+                    {selectedSubscription.startDate ? new Date(selectedSubscription.startDate).toLocaleString() : "-"}
                   </p>
                 </div>
-              </div>
-
-              <div className="p-4 border rounded-xl">
-                <p className="text-xs text-gray-500">Cause</p>
-                <p className="text-sm font-semibold text-gray-900 break-all">{selectedSubscription.cause || "-"}</p>
-              </div>
-
-              <div className="p-4 border rounded-xl">
-                <p className="text-xs text-gray-500">Message</p>
-                <p className="text-sm text-gray-800 whitespace-pre-wrap">
-                  {selectedSubscription.specialMessage || "-"}
-                </p>
+                <div className="p-4 border rounded-xl">
+                  <p className="text-xs text-gray-500">Renewal Date</p>
+                  <p className="text-sm font-semibold text-gray-900">
+                    {selectedSubscription.renewalDate ? new Date(selectedSubscription.renewalDate).toLocaleString() : "-"}
+                  </p>
+                </div>
               </div>
             </div>
           ) : null}

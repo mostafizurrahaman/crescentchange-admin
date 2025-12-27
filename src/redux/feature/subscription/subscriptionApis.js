@@ -3,6 +3,15 @@ import { baseApi } from "../baseApi";
 const dashboardApis = baseApi.injectEndpoints({
     endpoints: (builder) => ({
 
+        // GET SUBSCRIPTION OVERVIEW
+        getSubscriptionOverview: builder.query({
+            query: () => ({
+                url: "/subscription/overview",
+                method: "GET",
+            }),
+            providesTags: ["SUBSCRIPTION"],
+        }),
+
         // GET SUBSCRIPTION HISTORY
         getSubscriptionData: builder.query({
             query: (args) => {
@@ -82,6 +91,7 @@ const dashboardApis = baseApi.injectEndpoints({
 });
 
 export const {
+    useGetSubscriptionOverviewQuery,
     useGetSubscriptionDataQuery,
     useGetSubscriptionPaymentStatsQuery,
     useGetSubscriptionPaymentsQuery,
