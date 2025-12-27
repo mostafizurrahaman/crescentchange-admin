@@ -16,15 +16,15 @@ const TermsCondition = () => {
     const [updateContent, { isLoading }] = useUpdateContentMutation();
 
     useEffect(() => {
-        const next = data?.data?.termsCondition;
+        const next = data?.data?.terms;
         if (typeof next === "string") {
             setValue(next);
         }
-    }, [data?.data?.termsCondition]);
+    }, [data?.data?.terms]);
 
     const handleSubmit = async () => {
         try {
-            await updateContent({ termsCondition: value }).unwrap();
+            await updateContent({ terms: value }).unwrap();
             message.success("Terms condition updated successfully");
         } catch (err) {
             message.error(err?.data?.message || "Failed to update terms condition");
