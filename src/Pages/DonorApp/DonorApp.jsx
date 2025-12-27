@@ -2,6 +2,7 @@
 import DonorDataTable from "./DonorDataTable";
 import BadgeTable from "./BadgeTable";
 import BusinessReview from "./BusinessReview";
+// import { FaArrowDown } from "react-icons/fa";
 
 const DonorApp = () => {
   return (
@@ -14,7 +15,7 @@ const DonorApp = () => {
           </p>
         </div>
 
-        <div className="w-full md:w-auto flex justify-end items-center gap-3">
+        <div className="flex items-center justify-end w-full gap-3 md:w-auto">
           {/* <button className="flex items-center justify-center gap-2 px-6 py-3 bg-white border rounded-3xl">
             <FaPen></FaPen> Edit Rewards
           </button> */}

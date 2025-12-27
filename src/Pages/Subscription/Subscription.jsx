@@ -1,10 +1,13 @@
  
 import OrganizationSubscription from "../../Components/ManageSubscription/OrganizationSubscription";
 import { BsArrowUpRight } from "react-icons/bs";
+import { FiDownload } from "react-icons/fi";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useGetSubscriptionPaymentStatsQuery } from "../../redux/feature/subscription/subscriptionApis";
 
 const Subscription = () => {
+  const [exportHandler, setExportHandler] = useState(null);
   const { data: statsRes } = useGetSubscriptionPaymentStatsQuery();
 
   const activeSubscribers = statsRes?.data?.activeSubscribers ?? 0;
@@ -26,6 +29,19 @@ const Subscription = () => {
           <p className="mt-2 text-base text-gray-500">
             Track all subscriptions, manage invoices, and export payment data.
           </p>
+        </div>
+
+        <div className="flex items-center">
+          <button
+            type="button"
+            onClick={() => exportHandler?.()}
+            disabled={!exportHandler}
+            className={`flex items-center justify-center gap-2 px-6 text-sm font-medium text-white bg-black rounded-full h-11 ${
+              exportHandler ? "" : "opacity-50 cursor-not-allowed"
+            }`}
+          >
+            Export <FiDownload className="text-base" />
+          </button>
         </div>
       </div>
 
@@ -95,7 +111,7 @@ const Subscription = () => {
         </div>
       </div>
 
-      <OrganizationSubscription />
+      <OrganizationSubscription setExportHandler={setExportHandler} />
     </div>
   );
 };

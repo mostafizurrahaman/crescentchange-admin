@@ -1,4 +1,4 @@
-import { FaArrowDown } from "react-icons/fa";
+// import { FaArrowDown } from "react-icons/fa";
 import BusinessPortfolio from "./BusinessPortfolio";
 import RewardsManagementTable from "./RewardsManagementTable";
 
@@ -12,11 +12,11 @@ const BusinessAdmin = () => {
             Manage donor details, badges, goals, and rewards for the donor app.
           </p>
         </div>
-        <div className="flex items-center justify-end w-full gap-3 md:w-auto">
+        {/* <div className="flex items-center justify-end w-full gap-3 md:w-auto">
           <button className="flex items-center justify-center h-12 gap-2 px-6 text-sm font-medium bg-white border border-gray-200 rounded-full">
             <FaArrowDown /> Export
           </button>
-        </div>
+        </div> */}
       </div>
       <BusinessPortfolio />
       <RewardsManagementTable/>

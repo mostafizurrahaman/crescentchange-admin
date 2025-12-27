@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
   DatePicker,
@@ -14,25 +14,26 @@ import { VscEye } from "react-icons/vsc";
 import user from "../../assets/image/user.png";
 import { FaImage } from "react-icons/fa";
 import { FiDownload } from "react-icons/fi";
+import * as XLSX from "xlsx";
 
 import { useGetSubscriptionPaymentsQuery } from "../../redux/feature/subscription/subscriptionApis";
 
-const OrganizationSubscription = () => {
+const OrganizationSubscription = ({ setExportHandler }) => {
   const { RangePicker } = DatePicker;
 
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [limit] = useState(5);
   const [dateRange, setDateRange] = useState(null);
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
 
   const { data: listRes, isLoading } = useGetSubscriptionPaymentsQuery({
     page: currentPage,
     limit,
     searchTerm,
-    startDate,
-    endDate,
+    fromDate,
+    toDate,
   });
 
   const data = Array.isArray(listRes?.data) ? listRes.data : [];
@@ -73,13 +74,47 @@ const OrganizationSubscription = () => {
     setCurrentPage(1);
 
     if (dates && dates[0] && dates[1]) {
-      setStartDate(dateStrings?.[0] || "");
-      setEndDate(dateStrings?.[1] || "");
+      setFromDate(dateStrings?.[0] || "");
+      setToDate(dateStrings?.[1] || "");
     } else {
-      setStartDate("");
-      setEndDate("");
+      setFromDate("");
+      setToDate("");
     }
   };
+
+  const handleExportXlsx = () => {
+    const rows = (Array.isArray(data) ? data : []).map((r) => {
+      const email = r?.user?.email || "";
+      return {
+        Email: email,
+        Type: r?.planType || "",
+        Status: r?.status || "",
+        "Start Date": r?.startDate ? new Date(r.startDate).toLocaleString() : "",
+        "Renewal Date": r?.renewalDate ? new Date(r.renewalDate).toLocaleString() : "",
+        Amount: r?.latestPayment?.amount ?? r?.totalPaid ?? "",
+        Currency: r?.latestPayment?.currency || "",
+        "Transaction Date": r?.latestPayment?.transactionDate
+          ? new Date(r.latestPayment.transactionDate).toLocaleString()
+          : "",
+        "Invoice Url": r?.latestPayment?.invoiceUrl || "",
+      };
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Subscriptions");
+
+    const fileName = `subscriptions-${new Date().toISOString().slice(0, 10)}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+  };
+
+  useEffect(() => {
+    if (typeof setExportHandler === "function") {
+      setExportHandler(() => handleExportXlsx);
+      return () => setExportHandler(null);
+    }
+    return undefined;
+  }, [setExportHandler, data, fromDate, toDate, searchTerm, currentPage]);
 
   const handleDownload = (record) => {
     if (!record) {
@@ -201,6 +236,7 @@ const OrganizationSubscription = () => {
     {
       title: "Action",
       key: "action",
+      align: "center",
       render: (_, record) => (
         <div className="flex items-center justify-center gap-3 text-lg">
           <button
@@ -255,6 +291,14 @@ const OrganizationSubscription = () => {
               />
             </div>
           </div>
+
+          <button
+            type="button"
+            onClick={handleExportXlsx}
+            className="flex items-center justify-center gap-2 px-6 text-sm font-medium text-white bg-black rounded-full h-11"
+          >
+            Export <FiDownload className="text-base" />
+          </button>
         </div>
       </div>
 
