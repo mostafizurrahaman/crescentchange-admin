@@ -161,6 +161,21 @@ const SEASONAL_PERIOD_OPTIONS = [
 const TIER_ORDER = ["one-tier", "colour", "bronze", "silver", "gold"];
 const PROGRESSION_ORDER = ["colour", "bronze", "silver", "gold"];
 
+const normalizeGlbFile = (file) => {
+  if (!file) return null;
+  const name = String(file?.name || "").toLowerCase();
+  if (!name.endsWith(".glb")) return file;
+  if (file?.type === "model/gltf-binary") return file;
+  try {
+    return new File([file], file.name || "model.glb", {
+      type: "model/gltf-binary",
+      lastModified: file.lastModified,
+    });
+  } catch {
+    return file;
+  }
+};
+
 const CreateBadgeModal = ({ open, onClose }) => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
@@ -357,17 +372,17 @@ const CreateBadgeModal = ({ open, onClose }) => {
   }, [tierMode, open, form]);
 
   const handleSubmit = async (values) => {
-    const iconFile = fileList?.[0]?.originFileObj;
+    const iconFile = normalizeGlbFile(fileList?.[0]?.originFileObj);
     if (!iconFile) {
       message.error("Please upload the main 3D icon (.glb)");
       return;
     }
 
-    const oneTierModelFile = oneTierModelList?.[0]?.originFileObj;
-    const colourModelFile = tierModelLists?.colour?.[0]?.originFileObj;
-    const bronzeModelFile = tierModelLists?.bronze?.[0]?.originFileObj;
-    const silverModelFile = tierModelLists?.silver?.[0]?.originFileObj;
-    const goldModelFile = tierModelLists?.gold?.[0]?.originFileObj;
+    const oneTierModelFile = normalizeGlbFile(oneTierModelList?.[0]?.originFileObj);
+    const colourModelFile = normalizeGlbFile(tierModelLists?.colour?.[0]?.originFileObj);
+    const bronzeModelFile = normalizeGlbFile(tierModelLists?.bronze?.[0]?.originFileObj);
+    const silverModelFile = normalizeGlbFile(tierModelLists?.silver?.[0]?.originFileObj);
+    const goldModelFile = normalizeGlbFile(tierModelLists?.gold?.[0]?.originFileObj);
 
     if (tierMode === "single") {
       if (!oneTierModelFile) {
