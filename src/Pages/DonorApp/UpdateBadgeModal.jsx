@@ -16,37 +16,97 @@ import { useUpdateBadgeMutation } from "../../redux/feature/badge/badgeApis";
 
 const { TextArea } = Input;
 
+const normalizeGlbFile = (file) => {
+  if (!file) return null;
+  const name = String(file?.name || "").toLowerCase();
+  if (!name.endsWith(".glb")) return file;
+  if (file?.type === "model/gltf-binary") return file;
+  try {
+    return new File([file], file.name || "model.glb", {
+      type: "model/gltf-binary",
+      lastModified: file.lastModified,
+    });
+  } catch {
+    return file;
+  }
+};
+
 const UpdateBadgeModal = ({ open, onClose, badge }) => {
   const [form] = Form.useForm();
-  const [fileList, setFileList] = useState([]);
+  const [mainIconList, setMainIconList] = useState([]);
+  const [oneTierModelList, setOneTierModelList] = useState([]);
+  const [tierModelLists, setTierModelLists] = useState({
+    colour: [],
+    bronze: [],
+    silver: [],
+    gold: [],
+  });
 
   const [updateBadge, { isLoading }] = useUpdateBadgeMutation();
 
+  const isMultiTier = useMemo(() => {
+    const tiers = badge?.tiers;
+    if (Array.isArray(tiers) && tiers.length) {
+      if (tiers.length === 1) return false;
+      return true;
+    }
+    if (typeof badge?.isSingleTier === "boolean") return !badge.isSingleTier;
+    return false;
+  }, [badge]);
+
   const uploadProps = useMemo(
     () => ({
-      fileList,
+      fileList: mainIconList,
       maxCount: 1,
-      accept: "image/*",
+      accept: ".glb",
       beforeUpload: (file) => {
-        const isImage = file.type?.startsWith("image/");
-        if (!isImage) {
-          message.error("Please upload an image file");
+        const name = String(file?.name || "").toLowerCase();
+        const ok = name.endsWith(".glb") || file?.type === "model/gltf-binary";
+        if (!ok) {
+          message.error("Please upload a .glb file");
           return Upload.LIST_IGNORE;
         }
-        setFileList([file]);
         return false;
       },
+      onChange: (info) => {
+        const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
+        setMainIconList(nextList);
+      },
       onRemove: () => {
-        setFileList([]);
+        setMainIconList([]);
       },
     }),
-    [fileList]
+    [mainIconList]
+  );
+
+  const modelUploadProps = useMemo(
+    () => ({
+      maxCount: 1,
+      accept: ".glb",
+      beforeUpload: (file) => {
+        const name = String(file?.name || "").toLowerCase();
+        const ok = name.endsWith(".glb") || file?.type === "model/gltf-binary";
+        if (!ok) {
+          message.error("Please upload a .glb file");
+          return Upload.LIST_IGNORE;
+        }
+        return false;
+      },
+    }),
+    []
   );
 
   useEffect(() => {
     if (!open) {
       form.resetFields();
-      setFileList([]);
+      setMainIconList([]);
+      setOneTierModelList([]);
+      setTierModelLists({
+        colour: [],
+        bronze: [],
+        silver: [],
+        gold: [],
+      });
       return;
     }
 
@@ -63,7 +123,14 @@ const UpdateBadgeModal = ({ open, onClose, badge }) => {
       priority: typeof badge?.priority === "number" ? badge.priority : 0,
     });
 
-    setFileList([]);
+    setMainIconList([]);
+    setOneTierModelList([]);
+    setTierModelLists({
+      colour: [],
+      bronze: [],
+      silver: [],
+      gold: [],
+    });
   }, [open, badge, form]);
 
   const handleSubmit = async (values) => {
@@ -79,8 +146,37 @@ const UpdateBadgeModal = ({ open, onClose, badge }) => {
 
     const fd = new FormData();
     fd.append("data", JSON.stringify(payload));
-    if (fileList?.[0]) {
-      fd.append("icon", fileList[0]);
+
+    const iconFile = normalizeGlbFile(mainIconList?.[0]?.originFileObj);
+    const oneTierModelFile = normalizeGlbFile(oneTierModelList?.[0]?.originFileObj);
+    const colourModelFile = normalizeGlbFile(tierModelLists?.colour?.[0]?.originFileObj);
+    const bronzeModelFile = normalizeGlbFile(tierModelLists?.bronze?.[0]?.originFileObj);
+    const silverModelFile = normalizeGlbFile(tierModelLists?.silver?.[0]?.originFileObj);
+    const goldModelFile = normalizeGlbFile(tierModelLists?.gold?.[0]?.originFileObj);
+
+    if (iconFile) {
+      fd.append("mainIcon", iconFile);
+    }
+
+    if (!isMultiTier) {
+      if (oneTierModelFile) {
+        fd.append("tier_one-tier", oneTierModelFile);
+      }
+    }
+
+    if (isMultiTier) {
+      const anyMultiProvided = !!(colourModelFile || bronzeModelFile || silverModelFile || goldModelFile);
+      if (anyMultiProvided && !(colourModelFile && bronzeModelFile && silverModelFile && goldModelFile)) {
+        message.error("Multi-tier badges require all 4 tier models (colour/bronze/silver/gold)");
+        return;
+      }
+
+      if (colourModelFile && bronzeModelFile && silverModelFile && goldModelFile) {
+        fd.append("tier_colour", colourModelFile);
+        fd.append("tier_bronze", bronzeModelFile);
+        fd.append("tier_silver", silverModelFile);
+        fd.append("tier_gold", goldModelFile);
+      }
     }
 
     try {
@@ -168,16 +264,84 @@ const UpdateBadgeModal = ({ open, onClose, badge }) => {
         </div>
 
         <div className="mb-4">
-          <div className="mb-2 text-sm font-medium text-gray-700">Badge Icon (optional)</div>
-          <Upload {...uploadProps} listType="picture">
-            <Button icon={<UploadOutlined />}>Upload Icon</Button>
+          <div className="mb-2 text-sm font-medium text-gray-700">Main Icon (.glb) (optional)</div>
+          <Upload {...uploadProps} listType="text" showUploadList>
+            <Button icon={<UploadOutlined />}>Upload .glb</Button>
           </Upload>
           <Alert
             className="mt-3"
             type="info"
             showIcon
-            message="If you upload an icon, it will replace the existing one. Otherwise, the current icon stays." 
+            message="If you upload a main icon, it will replace the existing one. Otherwise, the current icon stays." 
           />
+        </div>
+
+        <div className="p-4 mb-4 border border-gray-200 bg-gray-50 rounded-2xl">
+          <div className="mb-3 text-sm font-semibold text-gray-900">Tier 3D Models (.glb) (optional)</div>
+
+          {!isMultiTier ? (
+            <Upload
+              {...modelUploadProps}
+              fileList={oneTierModelList}
+              onChange={(info) => {
+                const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
+                setOneTierModelList(nextList);
+              }}
+              onRemove={() => setOneTierModelList([])}
+            >
+              <Button icon={<UploadOutlined />}>Upload tier model (.glb)</Button>
+            </Upload>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Upload
+                {...modelUploadProps}
+                fileList={tierModelLists.colour}
+                onChange={(info) => {
+                  const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
+                  setTierModelLists((prev) => ({ ...prev, colour: nextList }));
+                }}
+                onRemove={() => setTierModelLists((prev) => ({ ...prev, colour: [] }))}
+              >
+                <Button icon={<UploadOutlined />}>Upload Colour (.glb)</Button>
+              </Upload>
+
+              <Upload
+                {...modelUploadProps}
+                fileList={tierModelLists.bronze}
+                onChange={(info) => {
+                  const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
+                  setTierModelLists((prev) => ({ ...prev, bronze: nextList }));
+                }}
+                onRemove={() => setTierModelLists((prev) => ({ ...prev, bronze: [] }))}
+              >
+                <Button icon={<UploadOutlined />}>Upload Bronze (.glb)</Button>
+              </Upload>
+
+              <Upload
+                {...modelUploadProps}
+                fileList={tierModelLists.silver}
+                onChange={(info) => {
+                  const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
+                  setTierModelLists((prev) => ({ ...prev, silver: nextList }));
+                }}
+                onRemove={() => setTierModelLists((prev) => ({ ...prev, silver: [] }))}
+              >
+                <Button icon={<UploadOutlined />}>Upload Silver (.glb)</Button>
+              </Upload>
+
+              <Upload
+                {...modelUploadProps}
+                fileList={tierModelLists.gold}
+                onChange={(info) => {
+                  const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
+                  setTierModelLists((prev) => ({ ...prev, gold: nextList }));
+                }}
+                onRemove={() => setTierModelLists((prev) => ({ ...prev, gold: [] }))}
+              >
+                <Button icon={<UploadOutlined />}>Upload Gold (.glb)</Button>
+              </Upload>
+            </div>
+          )}
         </div>
 
         <div className="flex items-center justify-end gap-2">

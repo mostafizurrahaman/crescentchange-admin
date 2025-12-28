@@ -4,6 +4,7 @@ import { DownOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { FaPencilAlt } from "react-icons/fa";
 import { RxCrossCircled } from "react-icons/rx";
 import { FiDownload } from "react-icons/fi";
+import "@google/model-viewer";
 
 import useSmartFetchHook from "../../Components/hooks/useSmartFetchHook.ts";
 import { useDeleteBadgeMutation, useGetBadgeReportQuery } from "../../redux/feature/badge/badgeApis";
@@ -12,9 +13,11 @@ import UpdateBadgeModal from "./UpdateBadgeModal";
 import { exportToXlsx } from "../../lib/export-xlsx";
 const BadgeTable = () => {
   const [isViewOpen, setIsViewOpen] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [selectedBadge, setSelectedBadge] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   const [deleteBadge, { isLoading: isDeleteLoading }] = useDeleteBadgeMutation();
 
@@ -118,7 +121,7 @@ const BadgeTable = () => {
         <button
           type="button"
           onClick={() => handleView(record)}
-          className="text-left text-sm font-semibold text-gray-900"
+          className="text-sm font-semibold text-left text-gray-900"
         >
           {text}
         </button>
@@ -128,13 +131,23 @@ const BadgeTable = () => {
       title: "Icon",
       dataIndex: "iconUrl",
       key: "icon",
-      render: (iconUrl, record) => (
-        <img
-          src={iconUrl || ""}
-          alt={record?.name || "badge"}
-          className="object-contain w-12 h-12"
-        />
-      ),
+      render: (iconUrl, _record) => {
+        const url = iconUrl || "";
+        return url ? (
+          <Button
+            type="link"
+            className="!px-0"
+            onClick={() => {
+              setPreviewUrl(url);
+              setIsPreviewOpen(true);
+            }}
+          >
+            View 3D
+          </Button>
+        ) : (
+          <span className="text-sm text-gray-400">-</span>
+        );
+      },
     },
     {
       title: "Criteria",
@@ -378,6 +391,31 @@ const BadgeTable = () => {
         badge={selectedBadge}
         onClose={() => setIsUpdateOpen(false)}
       />
+
+      <Modal
+        title="3D Preview"
+        open={isPreviewOpen}
+        onCancel={() => {
+          setIsPreviewOpen(false);
+          setPreviewUrl(null);
+        }}
+        footer={null}
+        centered
+        width={720}
+      >
+        {previewUrl ? (
+          <div className="w-full h-[420px]">
+            <model-viewer
+              src={previewUrl}
+              class="w-full h-full"
+              camera-controls
+              auto-rotate
+              shadow-intensity="1"
+              exposure="1"
+            />
+          </div>
+        ) : null}
+      </Modal>
     </div>
   );
 };
