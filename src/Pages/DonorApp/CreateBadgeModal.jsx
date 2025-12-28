@@ -435,7 +435,7 @@ const CreateBadgeModal = ({ open, onClose }) => {
 
       const formData = new FormData();
       formData.append("data", JSON.stringify(payload));
-      formData.append("mainicon", iconFile);
+      formData.append("mainIcon", iconFile);
 
       if (tierMode === "single" && oneTierModelFile) {
         formData.append("tier_one-tier", oneTierModelFile);
