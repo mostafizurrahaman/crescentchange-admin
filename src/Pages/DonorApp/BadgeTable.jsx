@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Button, Dropdown, Input, Menu, Modal, Table, message } from "antd";
-import { DownOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { DownOutlined, EyeOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { FaPencilAlt } from "react-icons/fa";
 import { RxCrossCircled } from "react-icons/rx";
 import { FiDownload } from "react-icons/fi";
@@ -11,6 +11,8 @@ import { useDeleteBadgeMutation, useGetBadgeReportQuery } from "../../redux/feat
 import CreateBadgeModal from "./CreateBadgeModal";
 import UpdateBadgeModal from "./UpdateBadgeModal";
 import { exportToXlsx } from "../../lib/export-xlsx";
+import BadgeDetailsModal from "./components/badge-details-modal";
+
 const BadgeTable = () => {
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -92,6 +94,21 @@ const BadgeTable = () => {
     }));
   }, [data]);
 
+  const formatDateTime = (value) => {
+    if (!value) return "-";
+    try {
+      return new Date(value).toLocaleString();
+    } catch {
+      return "-";
+    }
+  };
+
+  const formatUnlockType = (value) => {
+    const v = String(value || "");
+    if (!v) return "-";
+    return v.replaceAll("_", " ");
+  };
+
   const handleExport = () => {
     const rows = (Array.isArray(normalizedData) ? normalizedData : []).map((r) => ({
       Name: r?.name || "-",
@@ -163,6 +180,13 @@ const BadgeTable = () => {
       key: "action",
       render: (_, record) => (
         <div className="flex items-center justify-center gap-3">
+          <div
+            className="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full cursor-pointer"
+            title="View Badge"
+            onClick={() => handleView(record)}
+          >
+            <EyeOutlined />
+          </div>
           <div
             className="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full cursor-pointer"
             title="Edit Badge"
@@ -298,88 +322,19 @@ const BadgeTable = () => {
         />
       </div>
 
-      <Modal
-        title="Badge Details"
+      <BadgeDetailsModal
         open={isViewOpen}
-        onCancel={() => setIsViewOpen(false)}
-        footer={null}
-        centered
-        width={600}
-        styles={{
-          content: {
-            borderRadius: "30px",
-            overflow: "hidden",
-          },
+        badge={selectedBadge}
+        onClose={() => setIsViewOpen(false)}
+        statusTag={statusTag}
+        featuredTag={featuredTag}
+        formatDateTime={formatDateTime}
+        formatUnlockType={formatUnlockType}
+        onPreview={(url) => {
+          setPreviewUrl(url);
+          setIsPreviewOpen(true);
         }}
-      >
-        {selectedBadge ? (
-          <div className="space-y-6">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-4">
-                <img
-                  src={selectedBadge.iconUrl || ""}
-                  alt={selectedBadge.name}
-                  className="object-contain w-16 h-16 p-2 rounded-xl bg-gray-50"
-                />
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900">
-                    {selectedBadge.name}
-                  </h3>
-                  <p className="text-sm text-gray-600 capitalize">
-                    {selectedBadge.unlockType || "-"}
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col items-end gap-2">
-                {statusTag(selectedBadge.isActive)}
-                {featuredTag(selectedBadge.featured)}
-              </div>
-            </div>
-
-            <div className="p-4 rounded-lg bg-gray-50">
-              <p className="mb-2 text-sm font-medium text-gray-700">Description</p>
-              <p className="text-sm leading-relaxed text-gray-600">
-                {selectedBadge.description || "No description provided"}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 border border-blue-100 rounded-lg bg-blue-50">
-                <p className="text-xs font-medium tracking-wide text-blue-700 uppercase">Priority</p>
-                <p className="text-lg font-bold text-gray-900">{selectedBadge.priority ?? 0}</p>
-              </div>
-              <div className="p-4 border border-purple-100 rounded-lg bg-purple-50">
-                <p className="text-xs font-medium tracking-wide text-purple-700 uppercase">Logic</p>
-                <p className="text-sm font-semibold text-gray-900 capitalize">
-                  {selectedBadge.conditionLogic || "-"}
-                </p>
-              </div>
-            </div>
-
-            <div className="pt-4 border-t">
-              <h4 className="mb-3 text-sm font-medium text-gray-700">Tiers</h4>
-              <div className="space-y-2">
-                {Array.isArray(selectedBadge.tiers) && selectedBadge.tiers.length ? (
-                  selectedBadge.tiers.map((t, idx) => (
-                    <div key={`${t.tier}-${idx}`} className="flex items-center justify-between px-3 py-2 rounded-lg bg-gray-50">
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{t.name}</p>
-                        <p className="text-xs text-gray-500 capitalize">{t.tier}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm font-medium text-gray-900">Count: {t.requiredCount}</p>
-                        <p className="text-sm font-medium text-gray-900">Amount: {t.requiredAmount}</p>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-sm text-gray-500">No tiers</div>
-                )}
-              </div>
-            </div>
-          </div>
-        ) : null}
-      </Modal>
+      />
 
       <CreateBadgeModal
         open={isCreateOpen}

@@ -1,174 +1,342 @@
 {
     "success": true,
-    "message": "Subscriptions retrieved successfully!",
+    "message": "Badges retrieved",
     "meta": {
-        "total": 6,
         "page": 1,
-        "limit": 10
+        "limit": 10,
+        "total": 15,
+        "totalPage": 2
     },
     "data": [
         {
-            "_id": "694f849c2ce065f0b978575f",
-            "user": {
-                "_id": "694f84982ce065f0b9785757",
-                "email": "azmirdroid@gmail.com",
-                "role": "BUSINESS"
-            },
-            "planType": "trial",
-            "status": "trialing",
-            "createdAt": "2025-12-27T07:02:52.708Z",
-            "latestPayment": {
-                "amount": 0,
-                "currency": "usd",
-                "status": "succeeded",
-                "transactionDate": "2025-12-27T07:02:52.916Z"
-            },
-            "totalPaid": 0,
-            "business": {
-                "_id": "694f84992ce065f0b9785759",
-                "name": "Auto",
-                "category": "Auto Services"
-            },
-            "startDate": "2025-12-27T07:02:52.708Z",
-            "renewalDate": "2026-06-27T07:02:52.708Z",
-            "isCanceled": false
+            "_id": "6950ac489f8dc3db6ca587e5",
+            "name": "Quran Education 7",
+            "description": "Support Quran education initiatives",
+            "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/main/badge-main-upd-1766896393526",
+            "unlockType": "seasonal",
+            "conditionLogic": "or",
+            "specificCategories": [],
+            "seasonalPeriod": "ramadan",
+            "tiers": [
+                {
+                    "tier": "one-tier",
+                    "name": "Colour",
+                    "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/tiers/badge-tier-one-tier-1766894664168",
+                    "requiredCount": 1,
+                    "requiredAmount": 1
+                }
+            ],
+            "isSingleTier": true,
+            "isActive": true,
+            "priority": 0,
+            "featured": false,
+            "createdAt": "2025-12-28T04:04:24.220Z",
+            "updatedAt": "2025-12-28T04:33:13.589Z"
         },
         {
-            "_id": "694f8059bcffba308569f3dc",
-            "user": {
-                "_id": "6942d3bfaf3e0d14a9fdf597",
-                "email": "org1@yopmail.com",
-                "role": "ORGANIZATION"
-            },
-            "createdAt": "2025-12-27T06:44:39.600Z",
-            "planType": "trial",
-            "status": "active",
-            "latestPayment": {
-                "amount": 20,
-                "currency": "usd",
-                "status": "succeeded",
-                "invoiceUrl": "https://invoice.stripe.com/i/acct_1SeqcMKNMJBzPh0p/test_YWNjdF8xU2VxY01LTk1KQnpQaDBwLF9UZ0RnZzBjaHoxZFcxaGtIMElrakF2Rzh5MU4xbktjLDE1NzM1ODY4Mg0200dojsaJvY?s=ap",
-                "transactionDate": "2025-12-27T06:44:40.254Z"
-            },
-            "totalPaid": 20,
-            "organization": {
-                "_id": "6942d3bfaf3e0d14a9fdf599",
-                "name": "ALFALAH CATIRY",
-                "serviceType": "non-profit",
-                "country": "",
-                "logoImage": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/profiles/organizations/6942d3bfaf3e0d14a9fdf597-1766481606700"
-            },
-            "startDate": "2025-12-27T06:44:37.000Z",
-            "renewalDate": "2026-01-27T06:44:37.000Z",
-            "isCanceled": false
+            "_id": "6950aa459f8dc3db6ca58734",
+            "name": "Quran Education 6",
+            "description": "Support Quran education initiatives",
+            "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/main/badge-main-1766894149143",
+            "unlockType": "category_specific",
+            "conditionLogic": "or",
+            "specificCategories": [
+                "quran_education"
+            ],
+            "tiers": [
+                {
+                    "tier": "one-tier",
+                    "name": "Quran Supporter",
+                    "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/tiers/badge-tier-one-tier-1766894149241",
+                    "requiredCount": 1,
+                    "requiredAmount": 0
+                }
+            ],
+            "isSingleTier": true,
+            "isActive": true,
+            "priority": 0,
+            "featured": false,
+            "createdAt": "2025-12-28T03:55:49.305Z",
+            "updatedAt": "2025-12-28T03:55:49.305Z"
         },
         {
-            "_id": "694f7e7692a801fd28a45614",
-            "user": {
-                "_id": "694f7e7292a801fd28a4560e",
-                "email": "org105@yopmail.com",
-                "role": "ORGANIZATION"
-            },
-            "planType": "trial",
-            "status": "trialing",
-            "createdAt": "2025-12-27T06:36:38.827Z",
-            "latestPayment": {
-                "amount": 0,
-                "currency": "usd",
-                "status": "succeeded",
-                "transactionDate": "2025-12-27T06:36:38.901Z"
-            },
-            "totalPaid": 0,
-            "organization": {
-                "_id": "694f7e7392a801fd28a45610",
-                "name": "ALFALAH CATIRY",
-                "serviceType": "non-profit",
-                "country": "",
-                "logoImage": null
-            },
-            "startDate": "2025-12-27T06:36:38.826Z",
-            "renewalDate": "2026-06-27T06:36:38.824Z",
-            "isCanceled": false
+            "_id": "6950a86f9f8dc3db6ca5868e",
+            "name": "Quran Education 3",
+            "description": "Support Quran education initiatives",
+            "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/main/badge-main-1766893679653",
+            "unlockType": "category_specific",
+            "conditionLogic": "or",
+            "specificCategories": [
+                "quran_education"
+            ],
+            "tiers": [
+                {
+                    "tier": "one-tier",
+                    "name": "Quran Supporter",
+                    "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/tiers/badge-tier-one-tier-1766893679743",
+                    "requiredCount": 1,
+                    "requiredAmount": 0
+                }
+            ],
+            "isSingleTier": true,
+            "isActive": true,
+            "priority": 0,
+            "featured": false,
+            "createdAt": "2025-12-28T03:47:59.809Z",
+            "updatedAt": "2025-12-28T03:47:59.809Z"
         },
         {
-            "_id": "694e9669bc9db169d1d4ab1c",
-            "user": {
-                "_id": "694e9664bc9db169d1d4ab18",
-                "email": "fahim56@yopmail.com",
-                "role": "BUSINESS"
-            },
-            "planType": "trial",
-            "status": "trialing",
-            "createdAt": "2025-12-26T14:06:33.427Z",
-            "latestPayment": {
-                "amount": 0,
-                "currency": "usd",
-                "status": "succeeded",
-                "transactionDate": "2025-12-26T14:06:33.474Z"
-            },
-            "totalPaid": 0,
-            "business": {
-                "_id": "694e9665bc9db169d1d4ab1a",
-                "name": "Mosafizur Rahaman",
-                "category": "Food",
-                "logoImage": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/profiles/businesses/logo-1766757988069"
-            },
-            "startDate": "2025-12-26T14:06:33.426Z",
-            "renewalDate": "2026-06-26T14:29:21.082Z",
-            "isCanceled": false
+            "_id": "6950a6b3a7d9b0351b19e460",
+            "name": "Quran Education Badge",
+            "description": "Support Quran education initiatives",
+            "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/main/badge-main-1766893235171",
+            "unlockType": "category_specific",
+            "conditionLogic": "or",
+            "specificCategories": [
+                "quran_education"
+            ],
+            "tiers": [
+                {
+                    "tier": "one-tier",
+                    "name": "Quran Supporter",
+                    "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/tiers/badge-tier-one-tier-1766893235278",
+                    "requiredCount": 1,
+                    "requiredAmount": 0
+                }
+            ],
+            "isSingleTier": true,
+            "isActive": true,
+            "priority": 0,
+            "featured": false,
+            "createdAt": "2025-12-28T03:40:35.376Z",
+            "updatedAt": "2025-12-28T03:40:35.376Z"
         },
         {
-            "_id": "694e719147295e5af680e3d9",
-            "user": {
-                "_id": "694e718d47295e5af680e37b",
-                "email": "ami@yopmail.com",
-                "role": "BUSINESS"
-            },
-            "planType": "trial",
-            "status": "trialing",
-            "createdAt": "2025-12-26T11:29:21.083Z",
-            "latestPayment": {
-                "amount": 0,
-                "currency": "usd",
-                "status": "succeeded",
-                "transactionDate": "2025-12-26T11:29:21.164Z"
-            },
-            "totalPaid": 0,
-            "business": {
-                "_id": "694e718d47295e5af680e399",
-                "name": "TechMart BD",
-                "category": "Electronics"
-            },
-            "startDate": "2025-12-26T11:29:21.082Z",
-            "renewalDate": "2026-06-26T11:29:21.082Z",
-            "isCanceled": false
+            "_id": "694ff911ae638bf31cf15c5f",
+            "name": "Quran Education Badge (updated)",
+            "description": "Recognizes donors who support causes during the quiet hours of the night.",
+            "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/main/badge-main-1766848781978",
+            "unlockType": "category_specific",
+            "conditionLogic": "or",
+            "specificCategories": [
+                "quran_education"
+            ],
+            "tiers": [
+                {
+                    "tier": "colour",
+                    "name": "Quran Supporter",
+                    "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/tiers/badge-tier-colour-1766848784318",
+                    "requiredCount": 1,
+                    "requiredAmount": 0
+                },
+                {
+                    "tier": "bronze",
+                    "name": "Quran Advocate",
+                    "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/tiers/badge-tier-bronze-1766848784530",
+                    "requiredCount": 3,
+                    "requiredAmount": 50
+                },
+                {
+                    "tier": "silver",
+                    "name": "Quran Guardian",
+                    "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/tiers/badge-tier-silver-1766848784727",
+                    "requiredCount": 6,
+                    "requiredAmount": 100
+                },
+                {
+                    "tier": "gold",
+                    "name": "Quran Champion",
+                    "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/tiers/badge-tier-gold-1766848784931",
+                    "requiredCount": 10,
+                    "requiredAmount": 200
+                }
+            ],
+            "isSingleTier": false,
+            "isActive": true,
+            "priority": 12,
+            "featured": true,
+            "createdAt": "2025-12-27T15:19:45.166Z",
+            "updatedAt": "2025-12-27T15:29:14.110Z"
         },
         {
-            "_id": "694e68712c7968cfc7d0f762",
-            "user": {
-                "_id": "694e686e2c7968cfc7d0f75e",
-                "email": "mostafizbusiness@yopmail.com",
-                "role": "BUSINESS"
+            "_id": "694a75459d60849b5f491202",
+            "name": "First Donation",
+            "description": "this is the reward for  you for first donation",
+            "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/badge-1766487365401",
+            "unlockType": "donation_amount",
+            "conditionLogic": "or",
+            "specificCategories": [],
+            "tiers": [
+                {
+                    "tier": "colour",
+                    "name": "Donor Initator",
+                    "requiredCount": 1,
+                    "requiredAmount": 5
+                },
+                {
+                    "tier": "bronze",
+                    "name": "Bronze",
+                    "requiredCount": 2,
+                    "requiredAmount": 100
+                },
+                {
+                    "tier": "silver",
+                    "name": "Silver Initiator",
+                    "requiredCount": 3,
+                    "requiredAmount": 250
+                },
+                {
+                    "tier": "gold",
+                    "name": "Gold",
+                    "requiredCount": 5,
+                    "requiredAmount": 500
+                }
+            ],
+            "isSingleTier": false,
+            "isActive": true,
+            "priority": 0,
+            "featured": true,
+            "createdAt": "2025-12-23T10:56:05.465Z",
+            "updatedAt": "2025-12-23T10:56:05.465Z"
+        },
+        {
+            "timeRange": {
+                "start": 0,
+                "end": 4
             },
-            "planType": "trial",
-            "status": "active",
-            "createdAt": "2025-12-26T10:50:25.030Z",
-            "latestPayment": {
-                "amount": 0,
-                "currency": "usd",
-                "status": "succeeded",
-                "invoiceUrl": "https://invoice.stripe.com/i/acct_1SeqcMKNMJBzPh0p/test_YWNjdF8xU2VxY01LTk1KQnpQaDBwLF9UZnVTYkhLRHNoRUdDbTFvbVI4dkdBSTAzcEFneXo4LDE1NzI4NzE5OA02003wParFcn?s=ap",
-                "transactionDate": "2025-12-26T10:53:18.218Z"
-            },
-            "totalPaid": 0,
-            "business": {
-                "_id": "694e686e2c7968cfc7d0f760",
-                "name": "TechMart BD",
-                "category": "Electronics"
-            },
-            "startDate": "2025-12-26T10:53:15.000Z",
-            "renewalDate": "2025-12-26T10:53:15.000Z",
-            "isCanceled": false
+            "_id": "694a5c0d207e31e61d07030a",
+            "name": "Midnight Giver",
+            "description": "Give in the quiet hours when others sleep",
+            "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/badge-1766480909148",
+            "unlockType": "time_based",
+            "conditionLogic": "or",
+            "specificCategories": [],
+            "tiers": [
+                {
+                    "tier": "colour",
+                    "name": "Colour",
+                    "requiredCount": 1,
+                    "requiredAmount": 0
+                },
+                {
+                    "tier": "bronze",
+                    "name": "Bronze",
+                    "requiredCount": 3,
+                    "requiredAmount": 0
+                },
+                {
+                    "tier": "silver",
+                    "name": "Silver",
+                    "requiredCount": 5,
+                    "requiredAmount": 0
+                },
+                {
+                    "tier": "gold",
+                    "name": "Gold",
+                    "requiredCount": 10,
+                    "requiredAmount": 0
+                }
+            ],
+            "isSingleTier": false,
+            "isActive": true,
+            "priority": 0,
+            "featured": false,
+            "createdAt": "2025-12-23T09:08:29.211Z",
+            "updatedAt": "2025-12-23T09:08:29.211Z"
+        },
+        {
+            "_id": "694a5bbe207e31e61d070300",
+            "name": "Fitrah Fulfiller",
+            "description": "Complete your Zakat al-Fitr before Eid",
+            "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/badge-1766480830734",
+            "unlockType": "seasonal",
+            "conditionLogic": "or",
+            "specificCategories": [],
+            "seasonalPeriod": "laylat_al_qadr",
+            "tiers": [
+                {
+                    "tier": "one-tier",
+                    "name": "Colour",
+                    "requiredCount": 1,
+                    "requiredAmount": 0
+                }
+            ],
+            "isSingleTier": true,
+            "isActive": true,
+            "priority": 0,
+            "featured": false,
+            "createdAt": "2025-12-23T09:07:10.799Z",
+            "updatedAt": "2025-12-23T09:07:10.799Z"
+        },
+        {
+            "_id": "694a5b6b207e31e61d0702df",
+            "name": "Laylat al-Qadr Giver",
+            "description": "Donate on the blessed 27th night of Ramadan",
+            "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/badge-1766480747167",
+            "unlockType": "seasonal",
+            "conditionLogic": "or",
+            "specificCategories": [
+                "ramadan"
+            ],
+            "seasonalPeriod": "laylat_al_qadr",
+            "tiers": [
+                {
+                    "tier": "one-tier",
+                    "name": "Night of Power Giver",
+                    "requiredCount": 1,
+                    "requiredAmount": 0
+                }
+            ],
+            "isSingleTier": true,
+            "isActive": true,
+            "priority": 0,
+            "featured": false,
+            "createdAt": "2025-12-23T09:05:47.221Z",
+            "updatedAt": "2025-12-23T09:17:12.037Z"
+        },
+        {
+            "_id": "694a5af7207e31e61d070290",
+            "name": "Ramadan Giver",
+            "description": "Give generously during the blessed month of Ramadan",
+            "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/badge-1766480631408",
+            "unlockType": "seasonal",
+            "conditionLogic": "or",
+            "specificCategories": [
+                "quran_education"
+            ],
+            "seasonalPeriod": "ramadan",
+            "tiers": [
+                {
+                    "tier": "colour",
+                    "name": "Colour",
+                    "requiredCount": 1,
+                    "requiredAmount": 76
+                },
+                {
+                    "tier": "bronze",
+                    "name": "Bronze",
+                    "requiredCount": 3,
+                    "requiredAmount": 50
+                },
+                {
+                    "tier": "silver",
+                    "name": "Silver",
+                    "requiredCount": 5,
+                    "requiredAmount": 100
+                },
+                {
+                    "tier": "gold",
+                    "name": "Gold",
+                    "requiredCount": 10,
+                    "requiredAmount": 200
+                }
+            ],
+            "isSingleTier": false,
+            "isActive": true,
+            "priority": 0,
+            "featured": false,
+            "createdAt": "2025-12-23T09:03:51.470Z",
+            "updatedAt": "2025-12-23T09:12:23.143Z"
         }
     ]
 }
