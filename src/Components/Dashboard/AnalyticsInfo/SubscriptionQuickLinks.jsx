@@ -58,6 +58,11 @@ const SubscriptionQuickLinks = () => {
     });
   };
 
+  const getAvatarUrl = (recordOrUserObj) => {
+    const logo = recordOrUserObj?.business?.logoImage || recordOrUserObj?.organization?.logoImage;
+    return logo || user;
+  };
+
   const handleOpenView = (record) => {
     setSelectedSubscription(record);
     setIsViewOpen(true);
@@ -96,13 +101,13 @@ const SubscriptionQuickLinks = () => {
       dataIndex: "user",
       key: "email",
       sorter: true,
-      render: (userObj) => {
+      render: (userObj, record) => {
         const email = userObj?.email ?? "-";
         const displayName = email && email !== "-" ? String(email).split("@")[0] : "-";
         return (
           <div className="flex items-center gap-3">
             <img
-              src={user}
+              src={getAvatarUrl(record)}
               alt={displayName}
               className="w-10 h-10 rounded-full"
             />
@@ -307,6 +312,22 @@ const SubscriptionQuickLinks = () => {
         >
           {selectedSubscription ? (
             <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <img
+                  src={getAvatarUrl(selectedSubscription)}
+                  alt={selectedSubscription?.user?.email}
+                  className="w-12 h-12 rounded-full"
+                />
+                <div>
+                  <div className="text-sm font-semibold text-gray-900">
+                    {selectedSubscription?.user?.email
+                      ? String(selectedSubscription.user.email).split("@")[0]
+                      : "-"}
+                  </div>
+                  <div className="text-xs text-gray-500">{selectedSubscription?.user?.email || "-"}</div>
+                </div>
+              </div>
+
               <div className="p-4 border rounded-xl bg-gray-50">
                 <p className="text-xs text-gray-500">User</p>
                 <p className="text-base font-semibold text-gray-900">

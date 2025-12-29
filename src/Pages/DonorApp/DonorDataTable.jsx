@@ -75,7 +75,7 @@ const DonorDataTable = () => {
       render: (_text, record) => (
         <div className="flex items-center gap-3">
           <img
-            src={user}
+            src={record?.image || record?.profileImage || user}
             alt={record.name}
             className="w-10 h-10 rounded-full"
           />
@@ -272,7 +272,7 @@ const DonorDataTable = () => {
             {/* Profile Section */}
             <div className="flex items-center gap-4">
               <img
-                src={selectedDonor.image || user}
+                src={selectedDonor.image || selectedDonor.profileImage || user}
                 alt={selectedDonor.name}
                 className="object-cover w-20 h-20 border-2 border-gray-200 rounded-full"
                 onError={(e) => { e.target.src = user; }}

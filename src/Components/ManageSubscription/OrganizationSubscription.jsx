@@ -54,6 +54,11 @@ const OrganizationSubscription = ({ setExportHandler }) => {
     return false;
   };
 
+  const getAvatarUrl = (recordOrUserObj) => {
+    const logo = recordOrUserObj?.business?.logoImage || recordOrUserObj?.organization?.logoImage;
+    return logo || user;
+  };
+
   const handleCancel = () => {
     setIsModalVisible(false);
     form.resetFields();
@@ -169,13 +174,13 @@ const OrganizationSubscription = ({ setExportHandler }) => {
       title: "Name/Email",
       dataIndex: "user",
       key: "email",
-      render: (userObj) => {
+      render: (userObj, record) => {
         const email = userObj?.email ?? "-";
         const displayName = email && email !== "-" ? String(email).split("@")[0] : "-";
         return (
         <div className="flex items-center gap-2">
           <img
-            src={user}
+            src={getAvatarUrl(record)}
             alt={displayName}
             className="w-10 h-10 rounded-full"
           />
@@ -414,7 +419,7 @@ const OrganizationSubscription = ({ setExportHandler }) => {
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <img
-                src={user}
+                src={getAvatarUrl(selectedSubscription)}
                 alt={selectedSubscription?.user?.email}
                 className="w-12 h-12 rounded-full"
               />

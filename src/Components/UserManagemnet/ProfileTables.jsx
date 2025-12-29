@@ -124,7 +124,7 @@ const ProfileTables = () => {
       render: (_email, record) => (
         <div className="flex items-center gap-3">
           <img
-            src={user}
+            src={record?.image || record?.profileImage || user}
             alt={record?.email}
             className="w-10 h-10 rounded-full"
           />
@@ -194,7 +194,7 @@ const ProfileTables = () => {
           <div className="flex items-center justify-center gap-3 text-lg">
             <div
               onClick={() => handleView(record)}
-              className="flex items-center justify-center w-10 h-10 rounded-full cursor-pointer bg-gray-100"
+              className="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full cursor-pointer"
               title="View"
             >
               <VscEye />

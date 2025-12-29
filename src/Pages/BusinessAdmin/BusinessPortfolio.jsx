@@ -113,6 +113,8 @@ const BusinessPortfolio = () => {
         email: b?.auth?.email,
         status: b?.auth?.status,
         isActive: b?.auth?.isActive,
+        logoImage: b?.logoImage,
+        coverImage: b?.coverImage,
         createdAt: b?.createdAt,
         updatedAt: b?.updatedAt,
         icon,
@@ -177,19 +179,26 @@ const BusinessPortfolio = () => {
       title: "Business",
       dataIndex: "name",
       key: "name",
-      render: (_, record) => (
-        <div className="flex items-center gap-3">
-          <img
-            src={record.icon || icon}
-            alt={record.name}
-            className="object-contain w-10 h-10 rounded-full"
-          />
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold text-gray-900">{record.name}</span>
-            <span className="text-xs text-gray-500">{record.email || "—"}</span>
+      render: (_, record) => {
+        const businessImageUrl = record?.logoImage || record?.coverImage || record?.icon || "";
+        return (
+          <div className="flex items-center gap-3">
+            <img
+              src={businessImageUrl || icon}
+              alt={record.name}
+              title={businessImageUrl || "No business image provided by API"}
+              className="object-contain w-10 h-10 rounded-full"
+              onError={(e) => {
+                e.currentTarget.src = icon;
+              }}
+            />
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold text-gray-900">{record.name}</span>
+              <span className="text-xs text-gray-500">{record.email || "—"}</span>
+            </div>
           </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       title: "Created At",
@@ -413,14 +422,24 @@ const BusinessPortfolio = () => {
         {selectedBusiness && (
           <div className="p-4">
             <div className="mb-4 overflow-hidden rounded-xl">
-              <img src={COVER} alt="cover" className="object-cover w-full h-40" />
+              <img
+                src={selectedBusiness?.coverImage || COVER}
+                alt="cover"
+                className="object-cover w-full h-40"
+                onError={(e) => {
+                  e.currentTarget.src = COVER;
+                }}
+              />
             </div>
 
             <div className="flex items-center gap-3 mb-2">
               <img
-                src={selectedBusiness.icon}
+                src={selectedBusiness?.logoImage || selectedBusiness?.icon || icon}
                 alt={selectedBusiness.name}
                 className="object-cover w-12 h-12 rounded-full ring-1 ring-gray-200"
+                onError={(e) => {
+                  e.currentTarget.src = icon;
+                }}
               />
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">

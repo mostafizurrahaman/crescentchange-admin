@@ -89,32 +89,50 @@ const RewardsManagementTable = () => {
       dataIndex: "title",
       key: "title",
       render: (title, record) => (
-        <button
-          type="button"
-          onClick={() => handleView(record)}
-          className="text-sm font-semibold text-left text-gray-900"
-        >
-          {title || "-"}
-        </button>
+        <div className="flex items-center gap-3">
+          <img
+            src={record?.image || icon}
+            alt={title || record?.title || "Reward"}
+            className="object-contain w-10 h-10 rounded-full"
+            onError={(e) => {
+              e.currentTarget.src = icon;
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => handleView(record)}
+            className="text-sm font-semibold text-left text-gray-900"
+            title={title || "-"}
+          >
+            {title || "-"}
+          </button>
+        </div>
       ),
     },
     {
       title: "Business",
       dataIndex: "business",
       key: "business",
-      render: (business) => (
-        <div className="flex items-center gap-3">
-          <img
-            src={icon}
-            alt={business?.name}
-            className="object-contain w-10 h-10 rounded-full"
-          />
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold text-gray-900">{business?.name || "-"}</span>
-            <span className="text-xs text-gray-500">{business?._id || "-"}</span>
+      render: (business) => {
+        // const businessImageUrl = business?.logoImage || business?.coverImage || "";
+        return (
+          <div className="flex items-center gap-3">
+            {/* <img
+              src={businessImageUrl || icon}
+              alt={business?.name}
+              title={businessImageUrl || "No business logo provided by API"}
+              className="object-contain w-10 h-10 rounded-full"
+              onError={(e) => {
+                e.currentTarget.src = icon;
+              }}
+            /> */}
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold text-gray-900">{business?.name || "-"}</span>
+              <span className="text-xs text-gray-500">{business?._id || "-"}</span>
+            </div>
           </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       title: "Tier",

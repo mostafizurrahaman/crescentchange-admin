@@ -27,7 +27,7 @@ const BusinessReview = () => {
       render: (_, record) => (
         <div className="flex items-center gap-3">
           <img
-            src={record?.icon || icon}
+            src={record?.coverImage || record?.icon || icon}
             alt={record.name}
             className="object-contain w-12 h-12 rounded-full"
           />
