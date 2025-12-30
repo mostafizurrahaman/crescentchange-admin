@@ -123,6 +123,14 @@ const dashboardApis = baseApi.injectEndpoints({
             providesTags: ["USER"],
         }),
 
+        getCauseWisePercentages: builder.query({
+            query: () => ({
+                url: "/admin/clause-wise-percentages",
+                method: "GET",
+            }),
+            providesTags: ["USER"],
+        }),
+
     }),
 });
 
@@ -133,6 +141,7 @@ export const {
     useGetUserEngagementQuery,
     useGetDonationChartQuery,
     useGetCausesChartQuery,
+    useGetCauseWisePercentagesQuery,
     useChangeUserStatusMutation,
     useDeleteUserMutation,
 } = dashboardApis

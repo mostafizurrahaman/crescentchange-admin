@@ -17,7 +17,12 @@ import {
 } from "recharts";
 import { Select } from "antd";
 import { FaArrowDown } from "react-icons/fa";
-import { useGetUserEngagementQuery, useGetDonationChartQuery } from "../../redux/feature/user/userApis";
+import {
+  useGetUserEngagementQuery,
+  useGetDonationChartQuery,
+  useGetCauseWisePercentagesQuery,
+} from "../../redux/feature/user/userApis";
+import { exportToXlsx } from "../../lib/export-xlsx";
 const { Option } = Select;
 const AnalyticsRoute = () => {
   const [active, setActive] = useState("Today");
@@ -41,6 +46,12 @@ const AnalyticsRoute = () => {
     donationType: donationType === "all" ? undefined : donationType, 
     year 
   });
+
+  const {
+    data: causeWisePercentages,
+    isLoading: causeWiseLoading,
+    error: causeWiseError,
+  } = useGetCauseWisePercentagesQuery();
 
   const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const dataChart = useMemo(() => {
@@ -82,44 +93,85 @@ const AnalyticsRoute = () => {
     donor: "#fbcfe8",
     pie: ["#c7d2fe", "#bae6fd", "#fde68a", "#fecaca", "#e9d5ff", "#d1fae5"],
   };
-  const causes = [
-    {
-      id: "c1",
-      name: "Backpacks & Books",
-      since: "Jan 2025 – Ongoing",
-      percent: 55,
-      color: PALETTE.pie[1],
-    },
-    {
-      id: "c2",
-      name: "Digital Dreams",
-      since: "Feb 2025 – Ongoing",
-      percent: 18,
-      color: PALETTE.pie[2],
-    },
-    {
-      id: "c3",
-      name: "Warmth in Winter",
-      since: "Aug 2025 – Ongoing",
-      percent: 12,
-      color: PALETTE.pie[3],
-    },
-    {
-      id: "c4",
-      name: "Every Child, Every Meal",
-      since: "Mar 2025 – Ongoing",
-      percent: 8,
-      color: PALETTE.pie[4],
-    },
-    {
-      id: "c5",
-      name: "Other causes",
-      since: "—",
-      percent: 7,
-      color: PALETTE.pie[5],
-    },
-  ];
+  const causes = useMemo(() => {
+    const list = Array.isArray(causeWisePercentages?.data)
+      ? causeWisePercentages.data
+      : Array.isArray(causeWisePercentages?.data?.data)
+      ? causeWisePercentages.data.data
+      : [];
+
+    return list
+      .map((item, index) => {
+        const percentRaw = Number(item?.percentage ?? 0);
+        const createdAt = item?.createdAt ? new Date(item.createdAt) : null;
+        const label = item?.clause || item?.cause || "-";
+        return {
+          id: `${label}-${index}`,
+          name: label,
+          since: createdAt ? createdAt.toLocaleDateString() : "—",
+          percent: Number.isFinite(percentRaw) ? Number(percentRaw.toFixed(2)) : 0,
+          totalAmount: Number(item?.totalAmount ?? 0),
+          color: PALETTE.pie[index % PALETTE.pie.length],
+        };
+      })
+      .sort((a, b) => (b.percent || 0) - (a.percent || 0));
+  }, [causeWisePercentages]);
   const dataChartStaticRemoved = null;
+
+  const handleExport = () => {
+    const rows = [];
+
+    rows.push({
+      Section: "Filters",
+      Metric: "User Engagement Time Filter",
+      Value: userEngagementTimeFilter,
+    });
+    rows.push({
+      Section: "Filters",
+      Metric: "Donation Type",
+      Value: donationType,
+    });
+    rows.push({
+      Section: "Filters",
+      Metric: "Year",
+      Value: year,
+    });
+    rows.push({});
+
+    rows.push({ Section: "User Engagement", Metric: "Active Users", Value: userEngagementData?.data?.totalActiveUsers ?? 0 });
+    rows.push({ Section: "User Engagement", Metric: "Active Users Change", Value: userEngagementData?.data?.activeUsersChangeText || "-" });
+    rows.push({ Section: "User Engagement", Metric: "New Users", Value: userEngagementData?.data?.totalNewUsers ?? 0 });
+    rows.push({ Section: "User Engagement", Metric: "New Users Change", Value: userEngagementData?.data?.newUsersChangeText || "-" });
+    rows.push({ Section: "User Engagement", Metric: "Returning Users", Value: userEngagementData?.data?.totalReturningUsers ?? 0 });
+    rows.push({ Section: "User Engagement", Metric: "Returning Users Change", Value: userEngagementData?.data?.returningUsersChangeText || "-" });
+    rows.push({});
+
+    (Array.isArray(dataChart) ? dataChart : []).forEach((m) => {
+      rows.push({
+        Section: "Donations Trend",
+        Month: m?.name || "-",
+        "Total Amount": Number(m?.totalAmount ?? 0),
+        Count: Number(m?.count ?? 0),
+      });
+    });
+    rows.push({});
+
+    (Array.isArray(causes) ? causes : []).forEach((c) => {
+      rows.push({
+        Section: "Top Causes",
+        Cause: c?.name || "-",
+        Percent: Number(c?.percent ?? 0),
+        "Total Amount": Number(c?.totalAmount ?? 0),
+        Since: c?.since || "—",
+      });
+    });
+
+    exportToXlsx({
+      rows,
+      sheetName: "Analytics",
+      fileName: `analytics-${new Date().toISOString().slice(0, 10)}.xlsx`,
+    });
+  };
 
   return (
     <div>
@@ -313,32 +365,37 @@ const AnalyticsRoute = () => {
                   Which causes are receiving the most support.
                 </p>
               </div>
-              <Link to="#" className="text-xs text-blue-600 hover:underline">
-                View all causes
-              </Link>
             </div>
 
             <div className="flex flex-col gap-4">
-              {causes.map((c) => (
-                <div key={c.id} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span
-                      className="inline-block w-3 h-3 rounded-full"
-                      style={{ backgroundColor: c.color }}
-                    />
-                    <div>
-                      <div className="font-medium">{c.name}</div>
-                      <div className="text-xs text-gray-500">{c.since}</div>
+              {causeWiseLoading ? (
+                <div className="text-sm text-gray-500">Loading causes...</div>
+              ) : causeWiseError ? (
+                <div className="text-sm text-gray-500">Failed to load causes data</div>
+              ) : causes.length ? (
+                causes.map((c) => (
+                  <div key={c.id} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span
+                        className="inline-block w-3 h-3 rounded-full"
+                        style={{ backgroundColor: c.color }}
+                      />
+                      <div>
+                        <div className="font-medium">{c.name}</div>
+                        <div className="text-xs text-gray-500">{c.since}</div>
+                      </div>
                     </div>
+                    <div className="font-semibold text-right">{c.percent}%</div>
                   </div>
-                  <div className="font-semibold text-right">{c.percent}%</div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <div className="text-sm text-gray-500">No causes data</div>
+              )}
             </div>
           </div>
 
           {/* Right Section: Pie Chart */}
-          <div className="w-full h-full">
+          <div className="w-full h-[260px] md:h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <RechartsTooltip />
@@ -348,7 +405,7 @@ const AnalyticsRoute = () => {
                   nameKey="name"
                   cx="50%"
                   cy="50%"
-                  outerRadius="100%"
+                  outerRadius="90%"
                   innerRadius={0}
                   paddingAngle={1}
                   cornerRadius={6}
@@ -370,7 +427,12 @@ const AnalyticsRoute = () => {
             Download a full report of filtered analytics.
           </p>
         </div>
-        <button className="flex items-center justify-center gap-2 px-6 py-3 text-white bg-black rounded-3xl">
+        <button
+          type="button"
+          onClick={handleExport}
+          disabled={userEngagementLoading || donationLoading || causeWiseLoading}
+          className="flex items-center justify-center gap-2 px-6 py-3 text-white bg-black rounded-3xl disabled:opacity-60"
+        >
           Export <FaArrowDown />
         </button>
       </div>
