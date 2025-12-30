@@ -39,12 +39,15 @@ const DonorDataTable = () => {
 
   const handleDateRangeChange = (dates, dateStrings) => {
     setDateRange(dates);
-    const newParams = {};
+    setCurrentPage(1);
+
+    const params = {};
     if (dates && dates[0] && dates[1]) {
-      newParams.fromDate = dateStrings[0];
-      newParams.toDate = dateStrings[1];
+      params.fromDate = dateStrings?.[0];
+      params.toDate = dateStrings?.[1];
     }
-    setFilterParams(newParams);
+
+    setFilterParams(params);
   };
 
   const handleExport = () => {
@@ -71,7 +74,7 @@ const DonorDataTable = () => {
       title: "Name/Email",
       dataIndex: "email",
       key: "email",
-      sorter: true,
+      sorter: (a, b) => String(a?.email || "").localeCompare(String(b?.email || "")),
       render: (_text, record) => (
         <div className="flex items-center gap-3">
           <img
@@ -90,7 +93,7 @@ const DonorDataTable = () => {
       title: "Total Donations",
       dataIndex: "totalDonationAmount",
       key: "totalDonationAmount",
-      sorter: true,
+      sorter: (a, b) => Number(a?.totalDonationAmount ?? 0) - Number(b?.totalDonationAmount ?? 0),
       render: (v) => (
         <p className="text-sm font-semibold text-gray-900">${(v ?? 0).toFixed(2)}</p>
       ),
@@ -144,7 +147,7 @@ const DonorDataTable = () => {
       title: "Created At",
       dataIndex: "createdAt",
       key: "createdAt",
-      sorter: true,
+      sorter: (a, b) => new Date(a?.createdAt || 0).getTime() - new Date(b?.createdAt || 0).getTime(),
       render: (createdAt) => (
         <div className="leading-tight">
           <p className="text-sm font-semibold text-gray-900">
@@ -225,15 +228,8 @@ const DonorDataTable = () => {
             dataSource={data}
             loading={isLoading}
             rowKey="_id"
-            onChange={(tablePagination, filters, sorter) => {
+            onChange={(tablePagination) => {
               setCurrentPage(tablePagination.current);
-
-              const newParams = {};
-              if (sorter?.field) {
-                newParams.sortBy = sorter.field;
-                newParams.sortOrder = sorter.order === "ascend" ? "asc" : "desc";
-              }
-              setFilterParams(newParams);
             }}
             pagination={{
               current: pagination.page || 1,

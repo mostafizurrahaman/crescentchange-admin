@@ -1,13 +1,13 @@
  
 import OrganizationSubscription from "../../Components/ManageSubscription/OrganizationSubscription";
 import { BsArrowUpRight } from "react-icons/bs";
-import { FiDownload } from "react-icons/fi";
+// import { FiDownload } from "react-icons/fi";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useGetSubscriptionPaymentStatsQuery } from "../../redux/feature/subscription/subscriptionApis";
 
 const Subscription = () => {
-  const [exportHandler, setExportHandler] = useState(null);
+  const [ setExportHandler] = useState(null);
   const { data: statsRes } = useGetSubscriptionPaymentStatsQuery();
 
   const activeSubscribers = statsRes?.data?.activeSubscribers ?? 0;
@@ -31,7 +31,7 @@ const Subscription = () => {
           </p>
         </div>
 
-        <div className="flex items-center">
+        {/* <div className="flex items-center">
           <button
             type="button"
             onClick={() => exportHandler?.()}
@@ -42,7 +42,7 @@ const Subscription = () => {
           >
             Export <FiDownload className="text-base" />
           </button>
-        </div>
+        </div> */}
       </div>
 
       <div className="grid grid-cols-1 gap-4 mb-8 lg:grid-cols-2">
