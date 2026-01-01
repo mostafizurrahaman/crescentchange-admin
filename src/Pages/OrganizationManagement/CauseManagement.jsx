@@ -35,7 +35,7 @@ const CauseManagement = () => {
   const { data: categoriesRes, isLoading: isCatLoading } = useGetCauseCategoriesQuery();
   const [changeStatus, { isLoading: isStatusUpdating }] = useChangeCauseStatusMutation();
   const [createCause, { isLoading: isCreating }] = useCreateCauseMutation();
-  const { data: orgRes, isLoading: isOrgLoading } = useGetOrganizationReportQuery({ page: 1, limit: 50 });
+  const { data: orgRes, isLoading: isOrgLoading } = useGetOrganizationReportQuery({ page: 1, limit: 10 });
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);

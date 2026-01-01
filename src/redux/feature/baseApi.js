@@ -4,7 +4,7 @@ import {
 } from "@reduxjs/toolkit/query/react";
 import { SetAccessToken } from "./auth/authSlice";
 
-export const baseApiUrl = "http://13.55.115.124:5000/api/v1";
+export const baseApiUrl = "http://52.64.69.20:5000/api/v1";
 
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: baseApiUrl,

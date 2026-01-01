@@ -52,7 +52,7 @@ const BusinessPortfolio = () => {
     pagination,
     isLoading,
     setFilterParams,
-  } = useSmartFetchHook(useGetBusinessesReportQuery, { limit: 10 });
+  } = useSmartFetchHook(useGetBusinessesReportQuery);
   
   const [selectedBusiness, setSelectedBusiness] = useState(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);

@@ -145,7 +145,7 @@ const BadgeTable = () => {
       ),
     },
     {
-      title: "Icon",
+      title: "GLB",
       dataIndex: "iconUrl",
       key: "icon",
       render: (iconUrl, _record) => {
@@ -165,6 +165,13 @@ const BadgeTable = () => {
           <span className="text-sm text-gray-400">-</span>
         );
       },
+    },
+    {
+      title: "Tier Type",
+      key: "tierType",
+      render: (_value, record) => (
+        <span className="text-sm text-gray-900">{record?.isSingleTier ? "Single" : "Multi"}</span>
+      ),
     },
     {
       title: "Criteria",

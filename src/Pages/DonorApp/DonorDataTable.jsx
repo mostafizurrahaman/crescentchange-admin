@@ -21,7 +21,7 @@ const DonorDataTable = () => {
     pagination,
     isLoading,
     setFilterParams,
-  } = useSmartFetchHook(useGetDonationReportQuery, { limit: 10 });
+  } = useSmartFetchHook(useGetDonationReportQuery);
 
   const [isViewModalVisible, setIsViewModalVisible] = useState(false);
   const [selectedDonor, setSelectedDonor] = useState(null);

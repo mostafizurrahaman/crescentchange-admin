@@ -176,11 +176,35 @@ const normalizeGlbFile = (file) => {
   }
 };
 
+const isPngFile = (file) => {
+  const name = String(file?.name || "").toLowerCase();
+  return name.endsWith(".png") || file?.type === "image/png";
+};
+
+const isGifFile = (file) => {
+  const name = String(file?.name || "").toLowerCase();
+  return name.endsWith(".gif") || file?.type === "image/gif";
+};
+
 const CreateBadgeModal = ({ open, onClose }) => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
   const [oneTierModelList, setOneTierModelList] = useState([]);
+  const [oneTierSmallIconList, setOneTierSmallIconList] = useState([]);
+  const [oneTierAnimationList, setOneTierAnimationList] = useState([]);
   const [tierModelLists, setTierModelLists] = useState({
+    colour: [],
+    bronze: [],
+    silver: [],
+    gold: [],
+  });
+  const [tierSmallIconLists, setTierSmallIconLists] = useState({
+    colour: [],
+    bronze: [],
+    silver: [],
+    gold: [],
+  });
+  const [tierAnimationLists, setTierAnimationLists] = useState({
     colour: [],
     bronze: [],
     silver: [],
@@ -254,12 +278,56 @@ const CreateBadgeModal = ({ open, onClose }) => {
     []
   );
 
+  const pngUploadProps = useMemo(
+    () => ({
+      maxCount: 1,
+      accept: ".png",
+      beforeUpload: (file) => {
+        if (!isPngFile(file)) {
+          message.error("Please upload a .png file");
+          return Upload.LIST_IGNORE;
+        }
+        return false;
+      },
+    }),
+    []
+  );
+
+  const gifUploadProps = useMemo(
+    () => ({
+      maxCount: 1,
+      accept: ".gif",
+      beforeUpload: (file) => {
+        if (!isGifFile(file)) {
+          message.error("Please upload a .gif file");
+          return Upload.LIST_IGNORE;
+        }
+        return false;
+      },
+    }),
+    []
+  );
+
   useEffect(() => {
     if (!open) {
       form.resetFields();
       setFileList([]);
       setOneTierModelList([]);
+      setOneTierSmallIconList([]);
+      setOneTierAnimationList([]);
       setTierModelLists({
+        colour: [],
+        bronze: [],
+        silver: [],
+        gold: [],
+      });
+      setTierSmallIconLists({
+        colour: [],
+        bronze: [],
+        silver: [],
+        gold: [],
+      });
+      setTierAnimationLists({
         colour: [],
         bronze: [],
         silver: [],
@@ -272,6 +340,38 @@ const CreateBadgeModal = ({ open, onClose }) => {
     // Tiers will appear only after the user selects Tier Type.
     form.setFieldsValue({ tierMode: undefined, tiers: undefined });
   }, [open, form]);
+
+  useEffect(() => {
+    if (!open) return;
+    if (!tierMode) return;
+
+    if (tierMode === "single") {
+      setTierModelLists({
+        colour: [],
+        bronze: [],
+        silver: [],
+        gold: [],
+      });
+      setTierSmallIconLists({
+        colour: [],
+        bronze: [],
+        silver: [],
+        gold: [],
+      });
+      setTierAnimationLists({
+        colour: [],
+        bronze: [],
+        silver: [],
+        gold: [],
+      });
+    }
+
+    if (tierMode === "multi") {
+      setOneTierModelList([]);
+      setOneTierSmallIconList([]);
+      setOneTierAnimationList([]);
+    }
+  }, [tierMode, open]);
 
   useEffect(() => {
     if (!open) return;
@@ -379,14 +479,32 @@ const CreateBadgeModal = ({ open, onClose }) => {
     }
 
     const oneTierModelFile = normalizeGlbFile(oneTierModelList?.[0]?.originFileObj);
+    const oneTierSmallIconFile = oneTierSmallIconList?.[0]?.originFileObj;
+    const oneTierAnimationFile = oneTierAnimationList?.[0]?.originFileObj;
     const colourModelFile = normalizeGlbFile(tierModelLists?.colour?.[0]?.originFileObj);
     const bronzeModelFile = normalizeGlbFile(tierModelLists?.bronze?.[0]?.originFileObj);
     const silverModelFile = normalizeGlbFile(tierModelLists?.silver?.[0]?.originFileObj);
     const goldModelFile = normalizeGlbFile(tierModelLists?.gold?.[0]?.originFileObj);
+    const colourSmallIconFile = tierSmallIconLists?.colour?.[0]?.originFileObj;
+    const bronzeSmallIconFile = tierSmallIconLists?.bronze?.[0]?.originFileObj;
+    const silverSmallIconFile = tierSmallIconLists?.silver?.[0]?.originFileObj;
+    const goldSmallIconFile = tierSmallIconLists?.gold?.[0]?.originFileObj;
+    const colourAnimationFile = tierAnimationLists?.colour?.[0]?.originFileObj;
+    const bronzeAnimationFile = tierAnimationLists?.bronze?.[0]?.originFileObj;
+    const silverAnimationFile = tierAnimationLists?.silver?.[0]?.originFileObj;
+    const goldAnimationFile = tierAnimationLists?.gold?.[0]?.originFileObj;
 
     if (tierMode === "single") {
       if (!oneTierModelFile) {
         message.error("Please upload the 3D model (.glb) for the tier");
+        return;
+      }
+      if (!oneTierSmallIconFile || !isPngFile(oneTierSmallIconFile)) {
+        message.error("Please upload the tier small icon (.png)");
+        return;
+      }
+      if (!oneTierAnimationFile || !isGifFile(oneTierAnimationFile)) {
+        message.error("Please upload the tier animation (.gif)");
         return;
       }
     }
@@ -394,6 +512,14 @@ const CreateBadgeModal = ({ open, onClose }) => {
     if (tierMode === "multi") {
       if (!colourModelFile || !bronzeModelFile || !silverModelFile || !goldModelFile) {
         message.error("Please upload 3D models (.glb) for all tiers");
+        return;
+      }
+      if (!colourSmallIconFile || !bronzeSmallIconFile || !silverSmallIconFile || !goldSmallIconFile) {
+        message.error("Please upload small icons (.png) for all tiers");
+        return;
+      }
+      if (!colourAnimationFile || !bronzeAnimationFile || !silverAnimationFile || !goldAnimationFile) {
+        message.error("Please upload animations (.gif) for all tiers");
         return;
       }
     }
@@ -454,13 +580,26 @@ const CreateBadgeModal = ({ open, onClose }) => {
 
       if (tierMode === "single" && oneTierModelFile) {
         formData.append("tier_one-tier", oneTierModelFile);
+        if (oneTierSmallIconFile) formData.append("tier_one-tier_smallIcon", oneTierSmallIconFile);
+        if (oneTierAnimationFile) formData.append("tier_one-tier_animation", oneTierAnimationFile);
       }
 
       if (tierMode === "multi") {
         if (colourModelFile) formData.append("tier_colour", colourModelFile);
+        if (colourSmallIconFile) formData.append("tier_colour_smallIcon", colourSmallIconFile);
+        if (colourAnimationFile) formData.append("tier_colour_animation", colourAnimationFile);
+
         if (bronzeModelFile) formData.append("tier_bronze", bronzeModelFile);
+        if (bronzeSmallIconFile) formData.append("tier_bronze_smallIcon", bronzeSmallIconFile);
+        if (bronzeAnimationFile) formData.append("tier_bronze_animation", bronzeAnimationFile);
+
         if (silverModelFile) formData.append("tier_silver", silverModelFile);
+        if (silverSmallIconFile) formData.append("tier_silver_smallIcon", silverSmallIconFile);
+        if (silverAnimationFile) formData.append("tier_silver_animation", silverAnimationFile);
+
         if (goldModelFile) formData.append("tier_gold", goldModelFile);
+        if (goldSmallIconFile) formData.append("tier_gold_smallIcon", goldSmallIconFile);
+        if (goldAnimationFile) formData.append("tier_gold_animation", goldAnimationFile);
       }
 
       await createBadge(formData).unwrap();
@@ -600,78 +739,256 @@ const CreateBadgeModal = ({ open, onClose }) => {
             </Form.Item>
 
             {tierMode === "single" ? (
-              <Form.Item label="Tier 3D Model (.glb)" required>
-                <Upload
-                  {...modelUploadProps}
-                  fileList={oneTierModelList}
-                  onChange={(info) => {
-                    const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
-                    setOneTierModelList(nextList);
-                  }}
-                  onRemove={() => setOneTierModelList([])}
-                >
-                  <Button icon={<UploadOutlined />}>Upload .glb</Button>
-                </Upload>
-              </Form.Item>
+              <>
+                <Form.Item label="Tier 3D Model (.glb)" required>
+                  <Upload
+                    {...modelUploadProps}
+                    fileList={oneTierModelList}
+                    onChange={(info) => {
+                      const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
+                      setOneTierModelList(nextList);
+                    }}
+                    onRemove={() => setOneTierModelList([])}
+                  >
+                    <Button icon={<UploadOutlined />}>Upload .glb</Button>
+                  </Upload>
+                </Form.Item>
+
+                <Form.Item label="Tier Small Icon (.png)" required>
+                  <Upload
+                    {...pngUploadProps}
+                    listType="picture"
+                    showUploadList
+                    fileList={oneTierSmallIconList}
+                    onChange={(info) => {
+                      const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
+                      setOneTierSmallIconList(nextList);
+                    }}
+                    onRemove={() => setOneTierSmallIconList([])}
+                  >
+                    <Button icon={<UploadOutlined />}>Upload .png</Button>
+                  </Upload>
+                </Form.Item>
+
+                <Form.Item label="Tier Animation (.gif)" required>
+                  <Upload
+                    {...gifUploadProps}
+                    listType="picture"
+                    showUploadList
+                    fileList={oneTierAnimationList}
+                    onChange={(info) => {
+                      const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
+                      setOneTierAnimationList(nextList);
+                    }}
+                    onRemove={() => setOneTierAnimationList([])}
+                  >
+                    <Button icon={<UploadOutlined />}>Upload .gif</Button>
+                  </Upload>
+                </Form.Item>
+              </>
             ) : null}
 
             {tierMode === "multi" ? (
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <Form.Item label="Colour Tier 3D Model (.glb)" required>
-                  <Upload
-                    {...modelUploadProps}
-                    fileList={tierModelLists.colour}
-                    onChange={(info) => {
-                      const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
-                      setTierModelLists((prev) => ({ ...prev, colour: nextList }));
-                    }}
-                    onRemove={() => setTierModelLists((prev) => ({ ...prev, colour: [] }))}
-                  >
-                    <Button icon={<UploadOutlined />}>Upload .glb</Button>
-                  </Upload>
-                </Form.Item>
+                <div className="p-4 bg-white border border-gray-200 shadow-sm rounded-2xl">
+                  <div className="mb-3 text-sm font-semibold text-gray-900">Colour Tier</div>
 
-                <Form.Item label="Bronze Tier 3D Model (.glb)" required>
-                  <Upload
-                    {...modelUploadProps}
-                    fileList={tierModelLists.bronze}
-                    onChange={(info) => {
-                      const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
-                      setTierModelLists((prev) => ({ ...prev, bronze: nextList }));
-                    }}
-                    onRemove={() => setTierModelLists((prev) => ({ ...prev, bronze: [] }))}
-                  >
-                    <Button icon={<UploadOutlined />}>Upload .glb</Button>
-                  </Upload>
-                </Form.Item>
+                  <Form.Item label="3D Model (.glb)" required>
+                    <Upload
+                      {...modelUploadProps}
+                      fileList={tierModelLists.colour}
+                      onChange={(info) => {
+                        const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
+                        setTierModelLists((prev) => ({ ...prev, colour: nextList }));
+                      }}
+                      // onRemove={() => setTierModelLists((prev) => ({ ...prev, colour: [] }))}
+                    >
+                      <Button icon={<UploadOutlined />}>Upload .glb</Button>
+                    </Upload>
+                  </Form.Item>
 
-                <Form.Item label="Silver Tier 3D Model (.glb)" required>
-                  <Upload
-                    {...modelUploadProps}
-                    fileList={tierModelLists.silver}
-                    onChange={(info) => {
-                      const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
-                      setTierModelLists((prev) => ({ ...prev, silver: nextList }));
-                    }}
-                    onRemove={() => setTierModelLists((prev) => ({ ...prev, silver: [] }))}
-                  >
-                    <Button icon={<UploadOutlined />}>Upload .glb</Button>
-                  </Upload>
-                </Form.Item>
+                  <Form.Item label="Small Icon (.png)" required>
+                    <Upload
+                      {...pngUploadProps}
+                      listType="picture"
+                      showUploadList
+                      fileList={tierSmallIconLists.colour}
+                      onChange={(info) => {
+                        const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
+                        setTierSmallIconLists((prev) => ({ ...prev, colour: nextList }));
+                      }}
+                      // onRemove={() => setTierSmallIconLists((prev) => ({ ...prev, colour: [] }))}
+                    >
+                      <Button icon={<UploadOutlined />}>Upload .png</Button>
+                    </Upload>
+                  </Form.Item>
 
-                <Form.Item label="Gold Tier 3D Model (.glb)" required>
-                  <Upload
-                    {...modelUploadProps}
-                    fileList={tierModelLists.gold}
-                    onChange={(info) => {
-                      const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
-                      setTierModelLists((prev) => ({ ...prev, gold: nextList }));
-                    }}
-                    onRemove={() => setTierModelLists((prev) => ({ ...prev, gold: [] }))}
-                  >
-                    <Button icon={<UploadOutlined />}>Upload .glb</Button>
-                  </Upload>
-                </Form.Item>
+                  <Form.Item label="Animation (.gif)" required>
+                    <Upload
+                      {...gifUploadProps}
+                      listType="picture"
+                      showUploadList
+                      fileList={tierAnimationLists.colour}
+                      onChange={(info) => {
+                        const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
+                        setTierAnimationLists((prev) => ({ ...prev, colour: nextList }));
+                      }}
+                      // onRemove={() => setTierAnimationLists((prev) => ({ ...prev, colour: [] }))}
+                    >
+                      <Button icon={<UploadOutlined />}>Upload .gif</Button>
+                    </Upload>
+                  </Form.Item>
+                </div>
+
+                <div className="p-4 bg-white border border-gray-200 shadow-sm rounded-2xl">
+                  <div className="mb-3 text-sm font-semibold text-gray-900">Bronze Tier</div>
+
+                  <Form.Item label="3D Model (.glb)" required>
+                    <Upload
+                      {...modelUploadProps}
+                      fileList={tierModelLists.bronze}
+                      onChange={(info) => {
+                        const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
+                        setTierModelLists((prev) => ({ ...prev, bronze: nextList }));
+                      }}
+                      // onRemove={() => setTierModelLists((prev) => ({ ...prev, bronze: [] }))}
+                    >
+                      <Button icon={<UploadOutlined />}>Upload .glb</Button>
+                    </Upload>
+                  </Form.Item>
+
+                  <Form.Item label="Small Icon (.png)" required>
+                    <Upload
+                      {...pngUploadProps}
+                      listType="picture"
+                      showUploadList
+                      fileList={tierSmallIconLists.bronze}
+                      onChange={(info) => {
+                        const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
+                        setTierSmallIconLists((prev) => ({ ...prev, bronze: nextList }));
+                      }}
+                      onRemove={() => setTierSmallIconLists((prev) => ({ ...prev, bronze: [] }))}
+                    >
+                      <Button icon={<UploadOutlined />}>Upload .png</Button>
+                    </Upload>
+                  </Form.Item>
+
+                  <Form.Item label="Animation (.gif)" required>
+                    <Upload
+                      {...gifUploadProps}
+                      listType="picture"
+                      showUploadList
+                      fileList={tierAnimationLists.bronze}
+                      onChange={(info) => {
+                        const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
+                        setTierAnimationLists((prev) => ({ ...prev, bronze: nextList }));
+                      }}
+                      onRemove={() => setTierAnimationLists((prev) => ({ ...prev, bronze: [] }))}
+                    >
+                      <Button icon={<UploadOutlined />}>Upload .gif</Button>
+                    </Upload>
+                  </Form.Item>
+                </div>
+
+                <div className="p-4 bg-white border border-gray-200 shadow-sm rounded-2xl">
+                  <div className="mb-3 text-sm font-semibold text-gray-900">Silver Tier</div>
+
+                  <Form.Item label="3D Model (.glb)" required>
+                    <Upload
+                      {...modelUploadProps}
+                      fileList={tierModelLists.silver}
+                      onChange={(info) => {
+                        const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
+                        setTierModelLists((prev) => ({ ...prev, silver: nextList }));
+                      }}
+                      // onRemove={() => setTierModelLists((prev) => ({ ...prev, silver: [] }))}
+                    >
+                      <Button icon={<UploadOutlined />}>Upload .glb</Button>
+                    </Upload>
+                  </Form.Item>
+
+                  <Form.Item label="Small Icon (.png)" required>
+                    <Upload
+                      {...pngUploadProps}
+                      listType="picture"
+                      showUploadList
+                      fileList={tierSmallIconLists.silver}
+                      onChange={(info) => {
+                        const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
+                        setTierSmallIconLists((prev) => ({ ...prev, silver: nextList }));
+                      }}
+                      onRemove={() => setTierSmallIconLists((prev) => ({ ...prev, silver: [] }))}
+                    >
+                      <Button icon={<UploadOutlined />}>Upload .png</Button>
+                    </Upload>
+                  </Form.Item>
+
+                  <Form.Item label="Animation (.gif)" required>
+                    <Upload
+                      {...gifUploadProps}
+                      listType="picture"
+                      showUploadList
+                      fileList={tierAnimationLists.silver}
+                      onChange={(info) => {
+                        const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
+                        setTierAnimationLists((prev) => ({ ...prev, silver: nextList }));
+                      }}
+                      // onRemove={() => setTierAnimationLists((prev) => ({ ...prev, silver: [] }))}
+                    >
+                      <Button icon={<UploadOutlined />}>Upload .gif</Button>
+                    </Upload>
+                  </Form.Item>
+                </div>
+
+                <div className="p-4 bg-white border border-gray-200 shadow-sm rounded-2xl">
+                  <div className="mb-3 text-sm font-semibold text-gray-900">Gold Tier</div>
+
+                  <Form.Item label="3D Model (.glb)" required>
+                    <Upload
+                      {...modelUploadProps}
+                      fileList={tierModelLists.gold}
+                      onChange={(info) => {
+                        const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
+                        setTierModelLists((prev) => ({ ...prev, gold: nextList }));
+                      }}
+                      // onRemove={() => setTierModelLists((prev) => ({ ...prev, gold: [] }))}
+                    >
+                      <Button icon={<UploadOutlined />}>Upload .glb</Button>
+                    </Upload>
+                  </Form.Item>
+
+                  <Form.Item label="Small Icon (.png)" required>
+                    <Upload
+                      {...pngUploadProps}
+                      listType="picture"
+                      showUploadList
+                      fileList={tierSmallIconLists.gold}
+                      onChange={(info) => {
+                        const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
+                        setTierSmallIconLists((prev) => ({ ...prev, gold: nextList }));
+                      }}
+                      // onRemove={() => setTierSmallIconLists((prev) => ({ ...prev, gold: [] }))}
+                    >
+                      <Button icon={<UploadOutlined />}>Upload .png</Button>
+                    </Upload>
+                  </Form.Item>
+
+                  <Form.Item label="Animation (.gif)" required>
+                    <Upload
+                      {...gifUploadProps}
+                      listType="picture"
+                      showUploadList
+                      fileList={tierAnimationLists.gold}
+                      onChange={(info) => {
+                        const nextList = Array.isArray(info?.fileList) ? info.fileList.slice(-1) : [];
+                        setTierAnimationLists((prev) => ({ ...prev, gold: nextList }));
+                      }}
+                      // onRemove={() => setTierAnimationLists((prev) => ({ ...prev, gold: [] }))}
+                    >
+                      <Button icon={<UploadOutlined />}>Upload .gif</Button>
+                    </Upload>
+                  </Form.Item>
+                </div>
               </div>
             ) : null}
           </div>
@@ -837,12 +1154,12 @@ const CreateBadgeModal = ({ open, onClose }) => {
                 },
               ]}
             >
-              {(fields, { remove }) => (
+              {(fields, { remove: _remove }) => (
                 <div className="space-y-3">
                   {fields.map((field) => (
                     <div
                       key={field.key}
-                      className="grid grid-cols-1 gap-3 p-3 bg-white border rounded-lg md:grid-cols-5"
+                      className="grid grid-cols-1 gap-3 p-3 bg-white border rounded-lg md:grid-cols-4"
                     >
                       <Form.Item
                         {...field}
@@ -886,16 +1203,6 @@ const CreateBadgeModal = ({ open, onClose }) => {
                       >
                         <InputNumber className="w-full" min={0} />
                       </Form.Item>
-
-                      <div className="flex items-end">
-                        <Button
-                          danger
-                          onClick={() => remove(field.name)}
-                          disabled={fields.length <= 1 || tierMode === "multi"}
-                        >
-                          Remove
-                        </Button>
-                      </div>
                     </div>
                   ))}
                 </div>

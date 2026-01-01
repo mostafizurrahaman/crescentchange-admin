@@ -85,8 +85,7 @@ const DonorRewards = () => {
   const [dateRange, setDateRange] = useState(null);
 
   const { data: rewardList, isLoading, searchTerm, setSearchTerm, setFilterParams } = useSmartFetchHook(
-    useGetRewardReportQuery,
-    { limit: 12 }
+    useGetRewardReportQuery
   );
 
   const [rewards, setRewards] = useState(initialRewards);
@@ -339,7 +338,7 @@ const DonorRewards = () => {
                   openDrawer(reward);
                 }
               }}
-              className="p-5 bg-white border shadow-sm rounded-2xl cursor-pointer"
+              className="p-5 bg-white border shadow-sm cursor-pointer rounded-2xl"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-3">

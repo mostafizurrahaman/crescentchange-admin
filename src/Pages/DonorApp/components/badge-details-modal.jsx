@@ -28,7 +28,6 @@ const BadgeDetailsModal = ({
         body: {
           maxHeight: "85vh",
           overflowY: "auto",
-          // padding: 24,
           background: "#fff",
         },
       }}
@@ -174,7 +173,7 @@ const BadgeDetailsModal = ({
                   >
                     <div className="flex items-start gap-3">
                       {t.icon ? (
-                        <div className="w-14 h-14 rounded-xl bg-white overflow-hidden border border-gray-100">
+                        <div className="overflow-hidden bg-white border border-gray-100 w-14 h-14 rounded-xl">
                           <model-viewer
                             src={t.icon}
                             class="w-full h-full"
@@ -203,6 +202,38 @@ const BadgeDetailsModal = ({
                     </div>
 
                     <div className="grid grid-cols-2 gap-3 md:flex md:items-center md:gap-6">
+                      <div className="flex items-center gap-3 md:gap-2">
+                        {t.smallIconUrl ? (
+                          <a
+                            href={t.smallIconUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="block"
+                          >
+                            <img
+                              src={t.smallIconUrl}
+                              alt={`${t.tier || "tier"}-small`}
+                              className="object-contain w-10 h-10 bg-white border border-gray-200 rounded-lg"
+                            />
+                          </a>
+                        ) : null}
+
+                        {t.animationUrl ? (
+                          <a
+                            href={t.animationUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="block"
+                          >
+                            <img
+                              src={t.animationUrl}
+                              alt={`${t.tier || "tier"}-animation`}
+                              className="object-contain w-10 h-10 bg-white border border-gray-200 rounded-lg"
+                            />
+                          </a>
+                        ) : null}
+                      </div>
+
                       <div>
                         <p className="text-xs text-gray-500">Required Count</p>
                         <p className="text-sm font-semibold text-gray-900">{t.requiredCount ?? "-"}</p>
