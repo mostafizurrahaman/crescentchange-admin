@@ -21,7 +21,7 @@ const BadgeTable = () => {
   const [selectedBadge, setSelectedBadge] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
 
-  const [deleteBadge, { isLoading: isDeleteLoading }] = useDeleteBadgeMutation();
+  const [deleteBadge] = useDeleteBadgeMutation();
 
   const {
     data,
@@ -49,16 +49,17 @@ const BadgeTable = () => {
       okType: "danger",
       cancelText: "Cancel",
       centered: true,
-      okButtonProps: { loading: isDeleteLoading },
-      onOk: async () => {
-        try {
-          await deleteBadge(record._id).unwrap();
-          message.success("Badge deleted successfully");
-        } catch (e) {
-          const msg = e?.data?.message || "Failed to delete badge";
-          message.error(msg);
-        }
-      },
+      onOk: () =>
+        deleteBadge(record._id)
+          .unwrap()
+          .then(() => {
+            message.success("Badge deleted successfully");
+          })
+          .catch((e) => {
+            const msg = e?.data?.message || "Failed to delete badge";
+            message.error(msg);
+            return Promise.reject(e);
+          }),
     });
   };
 

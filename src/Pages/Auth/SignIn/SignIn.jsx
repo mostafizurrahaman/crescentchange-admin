@@ -20,7 +20,7 @@ const SignIn = () => {
     try {
       const res = await login({
         email: values["email-address"],
-        password: values.password
+        password: values.password.replace(/\s+/g, "")
       }).unwrap();
       if (res?.data?.twoFactorRequired) {
         setTwoFaEmail(res?.data?.email || values["email-address"]);
