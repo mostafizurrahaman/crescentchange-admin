@@ -1,342 +1,248 @@
 {
     "success": true,
-    "message": "Badges retrieved",
-    "meta": {
-        "page": 1,
-        "limit": 10,
-        "total": 15,
-        "totalPage": 2
-    },
-    "data": [
-        {
-            "_id": "6950ac489f8dc3db6ca587e5",
-            "name": "Quran Education 7",
-            "description": "Support Quran education initiatives",
-            "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/main/badge-main-upd-1766896393526",
-            "unlockType": "seasonal",
-            "conditionLogic": "or",
-            "specificCategories": [],
-            "seasonalPeriod": "ramadan",
-            "tiers": [
-                {
-                    "tier": "one-tier",
-                    "name": "Colour",
-                    "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/tiers/badge-tier-one-tier-1766894664168",
-                    "requiredCount": 1,
-                    "requiredAmount": 1
-                }
-            ],
-            "isSingleTier": true,
-            "isActive": true,
-            "priority": 0,
-            "featured": false,
-            "createdAt": "2025-12-28T04:04:24.220Z",
-            "updatedAt": "2025-12-28T04:33:13.589Z"
-        },
-        {
-            "_id": "6950aa459f8dc3db6ca58734",
-            "name": "Quran Education 6",
-            "description": "Support Quran education initiatives",
-            "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/main/badge-main-1766894149143",
-            "unlockType": "category_specific",
-            "conditionLogic": "or",
-            "specificCategories": [
-                "quran_education"
-            ],
-            "tiers": [
-                {
-                    "tier": "one-tier",
-                    "name": "Quran Supporter",
-                    "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/tiers/badge-tier-one-tier-1766894149241",
-                    "requiredCount": 1,
-                    "requiredAmount": 0
-                }
-            ],
-            "isSingleTier": true,
-            "isActive": true,
-            "priority": 0,
-            "featured": false,
-            "createdAt": "2025-12-28T03:55:49.305Z",
-            "updatedAt": "2025-12-28T03:55:49.305Z"
-        },
-        {
-            "_id": "6950a86f9f8dc3db6ca5868e",
-            "name": "Quran Education 3",
-            "description": "Support Quran education initiatives",
-            "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/main/badge-main-1766893679653",
-            "unlockType": "category_specific",
-            "conditionLogic": "or",
-            "specificCategories": [
-                "quran_education"
-            ],
-            "tiers": [
-                {
-                    "tier": "one-tier",
-                    "name": "Quran Supporter",
-                    "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/tiers/badge-tier-one-tier-1766893679743",
-                    "requiredCount": 1,
-                    "requiredAmount": 0
-                }
-            ],
-            "isSingleTier": true,
-            "isActive": true,
-            "priority": 0,
-            "featured": false,
-            "createdAt": "2025-12-28T03:47:59.809Z",
-            "updatedAt": "2025-12-28T03:47:59.809Z"
-        },
-        {
-            "_id": "6950a6b3a7d9b0351b19e460",
-            "name": "Quran Education Badge",
-            "description": "Support Quran education initiatives",
-            "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/main/badge-main-1766893235171",
-            "unlockType": "category_specific",
-            "conditionLogic": "or",
-            "specificCategories": [
-                "quran_education"
-            ],
-            "tiers": [
-                {
-                    "tier": "one-tier",
-                    "name": "Quran Supporter",
-                    "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/tiers/badge-tier-one-tier-1766893235278",
-                    "requiredCount": 1,
-                    "requiredAmount": 0
-                }
-            ],
-            "isSingleTier": true,
-            "isActive": true,
-            "priority": 0,
-            "featured": false,
-            "createdAt": "2025-12-28T03:40:35.376Z",
-            "updatedAt": "2025-12-28T03:40:35.376Z"
-        },
-        {
-            "_id": "694ff911ae638bf31cf15c5f",
-            "name": "Quran Education Badge (updated)",
-            "description": "Recognizes donors who support causes during the quiet hours of the night.",
-            "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/main/badge-main-1766848781978",
-            "unlockType": "category_specific",
-            "conditionLogic": "or",
-            "specificCategories": [
-                "quran_education"
-            ],
-            "tiers": [
-                {
-                    "tier": "colour",
-                    "name": "Quran Supporter",
-                    "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/tiers/badge-tier-colour-1766848784318",
-                    "requiredCount": 1,
-                    "requiredAmount": 0
-                },
-                {
-                    "tier": "bronze",
-                    "name": "Quran Advocate",
-                    "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/tiers/badge-tier-bronze-1766848784530",
-                    "requiredCount": 3,
-                    "requiredAmount": 50
-                },
-                {
-                    "tier": "silver",
-                    "name": "Quran Guardian",
-                    "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/tiers/badge-tier-silver-1766848784727",
-                    "requiredCount": 6,
-                    "requiredAmount": 100
-                },
-                {
-                    "tier": "gold",
-                    "name": "Quran Champion",
-                    "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/tiers/badge-tier-gold-1766848784931",
-                    "requiredCount": 10,
-                    "requiredAmount": 200
-                }
-            ],
-            "isSingleTier": false,
-            "isActive": true,
-            "priority": 12,
-            "featured": true,
-            "createdAt": "2025-12-27T15:19:45.166Z",
-            "updatedAt": "2025-12-27T15:29:14.110Z"
-        },
-        {
-            "_id": "694a75459d60849b5f491202",
-            "name": "First Donation",
-            "description": "this is the reward for  you for first donation",
-            "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/badge-1766487365401",
-            "unlockType": "donation_amount",
-            "conditionLogic": "or",
-            "specificCategories": [],
-            "tiers": [
-                {
-                    "tier": "colour",
-                    "name": "Donor Initator",
-                    "requiredCount": 1,
-                    "requiredAmount": 5
-                },
-                {
-                    "tier": "bronze",
-                    "name": "Bronze",
-                    "requiredCount": 2,
-                    "requiredAmount": 100
-                },
-                {
-                    "tier": "silver",
-                    "name": "Silver Initiator",
-                    "requiredCount": 3,
-                    "requiredAmount": 250
-                },
-                {
-                    "tier": "gold",
-                    "name": "Gold",
-                    "requiredCount": 5,
-                    "requiredAmount": 500
-                }
-            ],
-            "isSingleTier": false,
-            "isActive": true,
-            "priority": 0,
-            "featured": true,
-            "createdAt": "2025-12-23T10:56:05.465Z",
-            "updatedAt": "2025-12-23T10:56:05.465Z"
-        },
-        {
-            "timeRange": {
-                "start": 0,
-                "end": 4
+    "message": "Admin states fetched successfully!",
+    "data": {
+        "timeFilter": "week",
+        "totalDonation": 161,
+        "donationAmountChangeText": "+120.5% vs last week",
+        "totalActiveOrganizations": 9,
+        "currentPeriodActiveOrgs": 1,
+        "previousPeriodActiveOrgs": 8,
+        "organizationChangePct": -87.5,
+        "organizationChangeText": "-87.5% vs last week",
+        "donationGrowthMonthly": [
+            {
+                "year": 2026,
+                "month": 0,
+                "count": 16,
+                "growth": null
             },
-            "_id": "694a5c0d207e31e61d07030a",
-            "name": "Midnight Giver",
-            "description": "Give in the quiet hours when others sleep",
-            "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/badge-1766480909148",
-            "unlockType": "time_based",
-            "conditionLogic": "or",
-            "specificCategories": [],
-            "tiers": [
-                {
-                    "tier": "colour",
-                    "name": "Colour",
-                    "requiredCount": 1,
-                    "requiredAmount": 0
-                },
-                {
-                    "tier": "bronze",
-                    "name": "Bronze",
-                    "requiredCount": 3,
-                    "requiredAmount": 0
-                },
-                {
-                    "tier": "silver",
-                    "name": "Silver",
-                    "requiredCount": 5,
-                    "requiredAmount": 0
-                },
-                {
-                    "tier": "gold",
-                    "name": "Gold",
-                    "requiredCount": 10,
-                    "requiredAmount": 0
+            {
+                "year": 2026,
+                "month": 1,
+                "count": 0,
+                "growth": -100
+            },
+            {
+                "year": 2026,
+                "month": 2,
+                "count": 0,
+                "growth": 100
+            },
+            {
+                "year": 2026,
+                "month": 3,
+                "count": 0,
+                "growth": 100
+            },
+            {
+                "year": 2026,
+                "month": 4,
+                "count": 0,
+                "growth": 100
+            },
+            {
+                "year": 2026,
+                "month": 5,
+                "count": 0,
+                "growth": 100
+            },
+            {
+                "year": 2026,
+                "month": 6,
+                "count": 0,
+                "growth": 100
+            },
+            {
+                "year": 2026,
+                "month": 7,
+                "count": 0,
+                "growth": 100
+            },
+            {
+                "year": 2026,
+                "month": 8,
+                "count": 0,
+                "growth": 100
+            },
+            {
+                "year": 2026,
+                "month": 9,
+                "count": 0,
+                "growth": 100
+            },
+            {
+                "year": 2026,
+                "month": 10,
+                "count": 0,
+                "growth": 100
+            },
+            {
+                "year": 2026,
+                "month": 11,
+                "count": 0,
+                "growth": 100
+            }
+        ],
+        "subscriptionDonationGrowthMonthly": [
+            {
+                "year": 2026,
+                "month": 0,
+                "count": 0,
+                "growth": null
+            },
+            {
+                "year": 2026,
+                "month": 1,
+                "count": 0,
+                "growth": 100
+            },
+            {
+                "year": 2026,
+                "month": 2,
+                "count": 0,
+                "growth": 100
+            },
+            {
+                "year": 2026,
+                "month": 3,
+                "count": 0,
+                "growth": 100
+            },
+            {
+                "year": 2026,
+                "month": 4,
+                "count": 0,
+                "growth": 100
+            },
+            {
+                "year": 2026,
+                "month": 5,
+                "count": 0,
+                "growth": 100
+            },
+            {
+                "year": 2026,
+                "month": 6,
+                "count": 0,
+                "growth": 100
+            },
+            {
+                "year": 2026,
+                "month": 7,
+                "count": 0,
+                "growth": 100
+            },
+            {
+                "year": 2026,
+                "month": 8,
+                "count": 0,
+                "growth": 100
+            },
+            {
+                "year": 2026,
+                "month": 9,
+                "count": 0,
+                "growth": 100
+            },
+            {
+                "year": 2026,
+                "month": 10,
+                "count": 0,
+                "growth": 100
+            },
+            {
+                "year": 2026,
+                "month": 11,
+                "count": 0,
+                "growth": 100
+            }
+        ],
+        "donationsByCause": [
+            {
+                "cause": "Safe Water",
+                "causeCategory": "water",
+                "totalAmount": 25,
+                "currentMonthAmount": 25,
+                "previousMonthAmount": 0,
+                "changePct": 100,
+                "changeText": "+100.0% vs last week"
+            },
+            {
+                "cause": "Water for everyone",
+                "causeCategory": "water",
+                "totalAmount": 51,
+                "currentMonthAmount": 51,
+                "previousMonthAmount": 0,
+                "changePct": 100,
+                "changeText": "+100.0% vs last week"
+            },
+            {
+                "cause": "Food",
+                "causeCategory": "food",
+                "totalAmount": 85,
+                "currentMonthAmount": 85,
+                "previousMonthAmount": 0,
+                "changePct": 100,
+                "changeText": "+100.0% vs last week"
+            }
+        ],
+        "topDonors": [
+            {
+                "donor": "Mukarrom Hossain",
+                "donorImage": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/profiles/clients/client-6953af852acf220ff1a08ba7-1767092176107",
+                "totalAmount": 18107,
+                "currentMonthAmount": 101,
+                "previousMonthAmount": 0,
+                "changePct": 100,
+                "changeText": "+100.0% vs last week",
+                "since": "2025-12-30T10:56:16.199Z"
+            },
+            {
+                "donor": "Mukarrom",
+                "donorImage": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/profiles/clients/client-695215a80ba280e9348ff978-1767672962439",
+                "totalAmount": 133,
+                "currentMonthAmount": 60,
+                "previousMonthAmount": 63,
+                "changePct": -4.761904761904762,
+                "changeText": "-4.8% vs last week",
+                "since": "2025-12-29T05:56:36.565Z"
+            },
+            {
+                "donor": "Test User Afrin",
+                "donorImage": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/profiles/clients/client-695241ff16cd4182314dfdbf-1766998584759",
+                "totalAmount": 10,
+                "currentMonthAmount": 0,
+                "previousMonthAmount": 10,
+                "changePct": -100,
+                "changeText": "-100.0% vs last week"
+            }
+        ],
+        "recentDonorDocs": [
+            {
+                "createdAt": "2026-01-05T10:22:32.231Z",
+                "donor": {
+                    "name": "Mukarrom",
+                    "donorImage": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/profiles/clients/client-695215a80ba280e9348ff978-1767672962439",
+                    "email": "developer.mukarrom@gmail.com"
                 }
-            ],
-            "isSingleTier": false,
-            "isActive": true,
-            "priority": 0,
-            "featured": false,
-            "createdAt": "2025-12-23T09:08:29.211Z",
-            "updatedAt": "2025-12-23T09:08:29.211Z"
-        },
-        {
-            "_id": "694a5bbe207e31e61d070300",
-            "name": "Fitrah Fulfiller",
-            "description": "Complete your Zakat al-Fitr before Eid",
-            "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/badge-1766480830734",
-            "unlockType": "seasonal",
-            "conditionLogic": "or",
-            "specificCategories": [],
-            "seasonalPeriod": "laylat_al_qadr",
-            "tiers": [
-                {
-                    "tier": "one-tier",
-                    "name": "Colour",
-                    "requiredCount": 1,
-                    "requiredAmount": 0
+            },
+            {
+                "createdAt": "2026-01-05T06:10:19.854Z",
+                "donor": {
+                    "name": "Mukarrom Hossain",
+                    "donorImage": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/profiles/clients/client-6953af852acf220ff1a08ba7-1767092176107",
+                    "email": "mukarrom21@gmail.com"
                 }
-            ],
-            "isSingleTier": true,
-            "isActive": true,
-            "priority": 0,
-            "featured": false,
-            "createdAt": "2025-12-23T09:07:10.799Z",
-            "updatedAt": "2025-12-23T09:07:10.799Z"
-        },
-        {
-            "_id": "694a5b6b207e31e61d0702df",
-            "name": "Laylat al-Qadr Giver",
-            "description": "Donate on the blessed 27th night of Ramadan",
-            "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/badge-1766480747167",
-            "unlockType": "seasonal",
-            "conditionLogic": "or",
-            "specificCategories": [
-                "ramadan"
-            ],
-            "seasonalPeriod": "laylat_al_qadr",
-            "tiers": [
-                {
-                    "tier": "one-tier",
-                    "name": "Night of Power Giver",
-                    "requiredCount": 1,
-                    "requiredAmount": 0
+            },
+            {
+                "createdAt": "2025-12-29T09:14:34.849Z",
+                "donor": {
+                    "name": "Test User Afrin",
+                    "donorImage": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/profiles/clients/client-695241ff16cd4182314dfdbf-1766998584759",
+                    "email": "afrinbintaamzadtoru@gmail.com"
                 }
-            ],
-            "isSingleTier": true,
-            "isActive": true,
-            "priority": 0,
-            "featured": false,
-            "createdAt": "2025-12-23T09:05:47.221Z",
-            "updatedAt": "2025-12-23T09:17:12.037Z"
-        },
-        {
-            "_id": "694a5af7207e31e61d070290",
-            "name": "Ramadan Giver",
-            "description": "Give generously during the blessed month of Ramadan",
-            "icon": "https://crecent-changes.s3.ap-southeast-2.amazonaws.com/badges/badge-1766480631408",
-            "unlockType": "seasonal",
-            "conditionLogic": "or",
-            "specificCategories": [
-                "quran_education"
-            ],
-            "seasonalPeriod": "ramadan",
-            "tiers": [
-                {
-                    "tier": "colour",
-                    "name": "Colour",
-                    "requiredCount": 1,
-                    "requiredAmount": 76
-                },
-                {
-                    "tier": "bronze",
-                    "name": "Bronze",
-                    "requiredCount": 3,
-                    "requiredAmount": 50
-                },
-                {
-                    "tier": "silver",
-                    "name": "Silver",
-                    "requiredCount": 5,
-                    "requiredAmount": 100
-                },
-                {
-                    "tier": "gold",
-                    "name": "Gold",
-                    "requiredCount": 10,
-                    "requiredAmount": 200
-                }
-            ],
-            "isSingleTier": false,
-            "isActive": true,
-            "priority": 0,
-            "featured": false,
-            "createdAt": "2025-12-23T09:03:51.470Z",
-            "updatedAt": "2025-12-23T09:12:23.143Z"
-        }
-    ]
+            }
+        ]
+    }
 }

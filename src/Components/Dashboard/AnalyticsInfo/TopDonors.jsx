@@ -3,6 +3,12 @@ import user from "../../../assets/image/user.png";
 
 
 const TopDonors= ({ topDonors = [], recentDonorDocs = [], donationsByCause = [], totalDonation = 0 }) => {
+  const formatCategoryLabel = (value) => {
+    const v = String(value || "").replaceAll("_", " ").trim();
+    if (!v) return "-";
+    return v.charAt(0).toUpperCase() + v.slice(1);
+  };
+
   const totalDonationFallback = Array.isArray(donationsByCause)
     ? donationsByCause.reduce((sum, c) => sum + Number(c?.totalAmount || 0), 0)
     : 0;
@@ -20,7 +26,14 @@ const TopDonors= ({ topDonors = [], recentDonorDocs = [], donationsByCause = [],
           >
             <div className="flex items-center justify-start gap-2">
               <p className="w-4 text-sm text-gray-500">{idx + 1}</p>
-              <img src={user} alt="avatar" className="h-9 w-9" />
+              <img
+                src={item?.donorImage || user}
+                alt="avatar"
+                className="h-9 w-9 rounded-full object-cover bg-gray-100"
+                onError={(e) => {
+                  e.currentTarget.src = user;
+                }}
+              />
               <div>
                 <h1 className="text-sm font-semibold text-gray-900">{item.donor || "Unknown"}</h1>
                 <p className="text-xs text-gray-400">{item.since ? `Since: ${new Date(item.since).toLocaleDateString()}` : ""} </p>
@@ -50,7 +63,14 @@ const TopDonors= ({ topDonors = [], recentDonorDocs = [], donationsByCause = [],
             className="flex items-center justify-between gap-2 mb-4"
           >
             <div className="flex items-center justify-start gap-2">
-              <img src={user} alt="avatar" className="h-9 w-9" />
+              <img
+                src={item?.donor?.donorImage || user}
+                alt="avatar"
+                className="h-9 w-9 rounded-full object-cover bg-gray-100"
+                onError={(e) => {
+                  e.currentTarget.src = user;
+                }}
+              />
               <div>
                 <h1 className="text-sm font-semibold text-gray-900">{item?.donor?.name || "Unknown"}</h1>
                 <p className="text-xs text-gray-400">{item?.createdAt ? new Date(item.createdAt).toLocaleString() : ""} </p>
@@ -80,7 +100,7 @@ const TopDonors= ({ topDonors = [], recentDonorDocs = [], donationsByCause = [],
                 const colors = ["bg-pink-200", "bg-blue-200", "bg-yellow-200", "bg-green-200", "bg-purple-200"]; 
                 const color = colors[idx % colors.length];
                 return (
-                  <div key={`${c.cause}-${idx}`} className={`${color} h-16 rounded-3xl`} style={{ width: `${widthPct}%` }}></div>
+                  <div key={`${c.causeCategory || "category"}-${idx}`} className={`${color} h-16 rounded-3xl`} style={{ width: `${widthPct}%` }}></div>
                 );
               })}
             </div>
@@ -89,10 +109,10 @@ const TopDonors= ({ topDonors = [], recentDonorDocs = [], donationsByCause = [],
                 const colors = ["bg-pink-200", "bg-blue-200", "bg-yellow-200", "bg-green-200", "bg-purple-200"]; 
                 const dot = colors[idx % colors.length];
                 return (
-                  <div key={`${c.cause}-summary-${idx}`}>
+                  <div key={`${c.causeCategory || "category"}-summary-${idx}`}>
                     <div className="flex items-center justify-start gap-2">
                       <div className={`h-3 w-3 rounded ${dot}`}></div>
-                      <p className="text-sm text-gray-500">{c.cause}</p>
+                      <p className="text-sm text-gray-500">{formatCategoryLabel(c.causeCategory)}</p>
                     </div>
                     <h1 className="text-3xl font-semibold text-gray-900">
                       <span className="text-gray-300">$</span>{Number(c.totalAmount ?? 0).toLocaleString()}
