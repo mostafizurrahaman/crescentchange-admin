@@ -1,14 +1,5 @@
  
 import { FiSettings } from "react-icons/fi";
-import { LuLayoutDashboard } from "react-icons/lu";
-import { HiOutlineUsers } from "react-icons/hi2";
-import {
-  TbChartBar,
-  TbBuildingCommunity,
-  TbHeartHandshake,
-  TbBriefcase2,
-  TbCalendarEvent,
-} from "react-icons/tb";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 import logout from "../../assets/image/logout.png";
@@ -18,21 +9,21 @@ const Sidebar = ({ closeDrawer }) => {
   const location = useLocation();
 
   const menuItems = [
-    { icon: LuLayoutDashboard, label: "Dashboard", Link: "/" },
-    { icon: HiOutlineUsers, label: "User Management", Link: "/user-management" },
+    { icon: "/dashboard.svg", label: "Dashboard", Link: "/" },
+    { icon: "/user.svg", label: "User Management", Link: "/user-management" },
     {
-      icon: TbCalendarEvent,
+      icon: "/subscription.svg",
       label: "Subscription & Payments",
       Link: "/subscription-management",
     },
-    { icon: TbChartBar, label: "Analytics", Link: "/analytics" },
+    { icon: "/analytics.svg", label: "Analytics", Link: "/analytics" },
     {
-      icon: TbBuildingCommunity,
+      icon: "/organization.svg",
       label: "Organizations",
       Link: "/organization-management",
     },
-    { icon: TbHeartHandshake, label: "Donor App", Link: "/donor-app" },
-    { icon: TbBriefcase2, label: "Business Admin", Link: "/business-admin" },
+    { icon: "/donor.svg", label: "Donor App", Link: "/donor-app" },
+    { icon: "/business.svg", label: "Business Admin", Link: "/business-admin" },
   ];
 
   // Find active menu item based on current path
@@ -71,7 +62,7 @@ const Sidebar = ({ closeDrawer }) => {
                 onClick={() => handleActiveRoute(item.label)}
               >
                   <div className="flex items-center gap-3">
-                    <item.icon className="w-5 h-5" />
+                    <img src={item.icon} alt={item.label} className="w-5 h-5" />
                     <p className="font-medium truncate max-w-[170px]">{item.label}</p>
                   </div>
               </div>
