@@ -201,7 +201,7 @@ const CauseManagement = () => {
             <Select
               size="small"
               value={record.status}
-              bordered={false}
+              variant="borderless"
               loading={isStatusUpdating}
               onChange={(v) => handleChangeStatus(record._id, v)}
               className={`!w-[140px] !rounded-full !px-2 !py-4 ${pillCls} [&_.ant-select-selector]:!bg-transparent [&_.ant-select-selector]:!border-0 [&_.ant-select-selector]:!shadow-none [&_.ant-select-selection-item]:!text-xs [&_.ant-select-selection-item]:!font-medium`}
@@ -257,7 +257,7 @@ const CauseManagement = () => {
                   setSearchTerm(e.target.value);
                   setCurrentPage(1);
                 }}
-                bordered={false}
+                variant="borderless"
                 allowClear
               />
             </div>

@@ -216,7 +216,7 @@ const OrganizationTable = () => {
                   setSearchTerm(e.target.value);
                   setCurrentPage(1);
                 }}
-                bordered={false}
+                variant="borderless"
                 allowClear
               />
             </div>
@@ -226,7 +226,7 @@ const OrganizationTable = () => {
             <div className="px-4 py-2 bg-white border border-gray-200 rounded-full [&_.ant-picker]:!border-0 [&_.ant-picker]:!shadow-none [&_.ant-picker]:!bg-transparent [&_.ant-picker-input_>input]:!text-sm">
               <RangePicker
                 placeholder={["Select Interval", ""]}
-                bordered={false}
+                variant="borderless"
                 onChange={handleDateRangeChange}
                 value={dateRange}
               />

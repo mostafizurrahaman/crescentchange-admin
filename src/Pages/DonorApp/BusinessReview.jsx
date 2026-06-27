@@ -88,7 +88,7 @@ const BusinessReview = () => {
                   setSearchTerm(e.target.value);
                   setCurrentPage(1);
                 }}
-                bordered={false}
+                variant="borderless"
                 allowClear
                 disabled={isLoading}
               />
@@ -107,7 +107,7 @@ const BusinessReview = () => {
                   });
                 }}
                 disabled={isLoading}
-                bordered={false}
+                variant="borderless"
               />
             </div>
           </div>

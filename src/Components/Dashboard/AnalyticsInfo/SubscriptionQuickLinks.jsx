@@ -236,7 +236,7 @@ const SubscriptionQuickLinks = () => {
                   prefix={<SearchOutlined />}
                   placeholder="Search"
                   allowClear
-                  bordered={false}
+                  variant="borderless"
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value);
@@ -250,7 +250,7 @@ const SubscriptionQuickLinks = () => {
               <div className="px-4 py-2 bg-white border border-gray-200 rounded-full [&_.ant-picker]:!border-0 [&_.ant-picker]:!shadow-none [&_.ant-picker]:!bg-transparent [&_.ant-picker-input_>input]:!text-sm">
                 <RangePicker
                   placeholder={["Select Interval", ""]}
-                  bordered={false}
+                  variant="borderless"
                   onChange={(dates, dateStrings) => {
                     if (dates && dates.length === 2) {
                       setDateRange([dateStrings[0], dateStrings[1]]);

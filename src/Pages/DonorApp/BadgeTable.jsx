@@ -280,7 +280,7 @@ const BadgeTable = () => {
                   setSearchTerm(e.target.value);
                   setCurrentPage(1);
                 }}
-                bordered={false}
+                variant="borderless"
                 allowClear
                 disabled={isLoading}
               />

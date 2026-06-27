@@ -303,7 +303,7 @@ const DonorRewards = () => {
                 placeholder="Search"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                bordered={false}
+                variant="borderless"
                 allowClear
                 disabled={isLoading}
               />
@@ -316,8 +316,9 @@ const DonorRewards = () => {
                 placeholder={["Select Interval", ""]}
                 onChange={handleDateRangeChange}
                 value={dateRange}
-                bordered={false}
+                variant="borderless"
                 disabled={isLoading}
+                allowEmpty={[true, true]}
               />
             </div>
           </div>
