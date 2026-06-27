@@ -6,6 +6,7 @@ import {
   Modal,
   Table,
   Button,
+  message,
 } from "antd";
 import { SearchOutlined, LoadingOutlined } from "@ant-design/icons";
 import { VscEye } from "react-icons/vsc";
@@ -72,6 +73,9 @@ const ProfileTables = () => {
       await dispatch(
         baseApi.endpoints.deleteUser.initiate(record._id)
       ).unwrap();
+      message.success("User deleted successfully");
+    } catch (err) {
+      message.error(err?.data?.message || "Failed to delete user");
     } finally {
       setRowLoadingId(null);
     }

@@ -10,6 +10,7 @@ import {
   Space,
   DatePicker,
   Spin,
+  message,
 } from "antd";
 import {
   FaCheckCircle,
@@ -90,6 +91,9 @@ const BusinessPortfolio = () => {
     try {
       setRowLoadingId(record.authId);
       await deleteUser(record.authId).unwrap();
+      message.success("User deleted successfully");
+    } catch (err) {
+      message.error(err?.data?.message || "Failed to delete user");
     } finally {
       setRowLoadingId(null);
     }
