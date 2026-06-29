@@ -67,18 +67,30 @@ const ProfileTables = () => {
     }
   };
 
-  const handleDelete = async (record) => {
-    try {
-      setRowLoadingId(record._id);
-      await dispatch(
-        baseApi.endpoints.deleteUser.initiate(record._id)
-      ).unwrap();
-      message.success("User deleted successfully");
-    } catch (err) {
-      message.error(err?.data?.message || "Failed to delete user");
-    } finally {
-      setRowLoadingId(null);
-    }
+  const handleDelete = (record) => {
+    if (!record?._id) return;
+
+    Modal.confirm({
+      title: "Delete User",
+      content: `Are you sure you want to delete this user (${record?.name || record?.email || "this user"})?`,
+      okText: "Delete",
+      okType: "danger",
+      cancelText: "Cancel",
+      centered: true,
+      onOk: async () => {
+        try {
+          setRowLoadingId(record._id);
+          await dispatch(
+            baseApi.endpoints.deleteUser.initiate(record._id)
+          ).unwrap();
+          message.success("User deleted successfully");
+        } catch (err) {
+          message.error(err?.data?.message || "Failed to delete user");
+        } finally {
+          setRowLoadingId(null);
+        }
+      },
+    });
   };
 
   const handleDateRangeChange = (dates, dateStrings) => {
@@ -98,10 +110,13 @@ const ProfileTables = () => {
   const handleExport = () => {
     const rows = (Array.isArray(data) ? data : []).map((r) => ({
       Name:
-        r?.firstName || r?.lastName
+        r?.name
+          ? r.name
+          : r?.firstName || r?.lastName
           ? `${r?.firstName || ""} ${r?.lastName || ""}`.trim()
           : r?.email?.split("@")[0] || "-",
       Email: r?.email || "-",
+      Role: r?.role || "-",
       Status: r?.status || "-",
       "Last Active": r?.lastActive
         ? new Date(r.lastActive).toLocaleString()
@@ -133,11 +148,15 @@ const ProfileTables = () => {
             className="w-10 h-10 rounded-full"
           />
           <div>
-            <p className="text-sm font-semibold text-gray-900">
-              {record?.firstName || record?.lastName
-                ? `${record?.firstName || ""} ${record?.lastName || ""}`.trim()
-                : record?.email?.split("@")[0] || "-"}
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-semibold text-gray-900">
+                {record?.name
+                  ? record?.name
+                  : record?.firstName || record?.lastName
+                  ? `${record?.firstName || ""} ${record?.lastName || ""}`.trim()
+                  : record?.email?.split("@")[0] || "-"}
+              </p>
+            </div>
             <p className="text-xs text-gray-500">{record?.email || "-"}</p>
           </div>
         </div>
@@ -166,6 +185,8 @@ const ProfileTables = () => {
       title: "Status",
       dataIndex: "status",
       key: "status",
+      align: "center",
+      width: 120,
       filters: [
         { text: "Verified", value: "verified" },
         { text: "Pending", value: "pending" },
@@ -335,12 +356,14 @@ const ProfileTables = () => {
             <div className="flex items-center gap-4">
               <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl">
                 <span className="text-xl font-bold text-white">
-                  {selectedUser.firstName?.charAt(0)?.toUpperCase() || selectedUser.email?.charAt(0)?.toUpperCase() || "U"}
+                  {selectedUser.name?.charAt(0)?.toUpperCase() || selectedUser.firstName?.charAt(0)?.toUpperCase() || selectedUser.email?.charAt(0)?.toUpperCase() || "U"}
                 </span>
               </div>
               <div className="flex-1">
                 <h3 className="mb-1 text-xl font-semibold text-gray-900">
-                  {selectedUser.firstName && selectedUser.lastName 
+                  {selectedUser.name
+                    ? selectedUser.name
+                    : selectedUser.firstName && selectedUser.lastName 
                     ? `${selectedUser.firstName} ${selectedUser.lastName}` 
                     : selectedUser.email?.split('@')[0] || 'Unknown User'}
                 </h3>
@@ -423,9 +446,17 @@ const ProfileTables = () => {
                 <div className="flex items-center justify-between px-3 py-2 bg-white rounded-lg">
                   <span className="text-sm text-gray-600">Full Name</span>
                   <span className="text-sm font-medium text-gray-900">
-                    {selectedUser.firstName && selectedUser.lastName 
+                    {selectedUser.name
+                      ? selectedUser.name
+                      : selectedUser.firstName && selectedUser.lastName 
                       ? `${selectedUser.firstName} ${selectedUser.lastName}` 
                       : "Not specified"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between px-3 py-2 bg-white rounded-lg">
+                  <span className="text-sm text-gray-600">Role</span>
+                  <span className="text-sm font-medium text-gray-900 uppercase">
+                    {selectedUser.role || "Not specified"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between px-3 py-2 bg-white rounded-lg">

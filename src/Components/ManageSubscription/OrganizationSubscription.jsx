@@ -90,7 +90,12 @@ const OrganizationSubscription = ({ setExportHandler }) => {
   const handleExportXlsx = () => {
     const rows = (Array.isArray(data) ? data : []).map((r) => {
       const email = r?.user?.email || "";
+      const name = r?.business?.name 
+        || r?.organization?.name 
+        || r?.user?.name 
+        || (email && email !== "-" ? String(email).split("@")[0] : "-");
       return {
+        Name: name,
         Email: email,
         Type: r?.planType || "",
         Status: r?.status || "",
@@ -176,7 +181,10 @@ const OrganizationSubscription = ({ setExportHandler }) => {
       key: "email",
       render: (userObj, record) => {
         const email = userObj?.email ?? "-";
-        const displayName = email && email !== "-" ? String(email).split("@")[0] : "-";
+        const displayName = record?.business?.name 
+          || record?.organization?.name 
+          || userObj?.name 
+          || (email && email !== "-" ? String(email).split("@")[0] : "-");
         return (
         <div className="flex items-center gap-2">
           <img

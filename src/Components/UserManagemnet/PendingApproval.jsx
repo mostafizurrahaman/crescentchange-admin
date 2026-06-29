@@ -69,10 +69,13 @@ const PendingApproval = () => {
   const handleExport = () => {
     const rows = (Array.isArray(data) ? data : []).map((r) => ({
       Name:
-        r?.firstName || r?.lastName
+        r?.name
+          ? r.name
+          : r?.firstName || r?.lastName
           ? `${r?.firstName || ""} ${r?.lastName || ""}`.trim()
           : r?.email?.split("@")[0] || "-",
       Email: r?.email || "-",
+      Role: r?.role || "-",
       Status: r?.status || "-",
       "Last Active": r?.lastActive
         ? new Date(r.lastActive).toLocaleString()
@@ -104,11 +107,15 @@ const PendingApproval = () => {
             className="w-10 h-10 rounded-full"
           />
           <div>
-            <p className="text-sm font-semibold text-gray-900">
-              {record?.firstName || record?.lastName
-                ? `${record?.firstName || ""} ${record?.lastName || ""}`.trim()
-                : record?.email?.split("@")[0] || "-"}
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-semibold text-gray-900">
+                {record?.name
+                  ? record?.name
+                  : record?.firstName || record?.lastName
+                  ? `${record?.firstName || ""} ${record?.lastName || ""}`.trim()
+                  : record?.email?.split("@")[0] || "-"}
+              </p>
+            </div>
             <p className="text-xs text-gray-500">{record?.email || "-"}</p>
           </div>
         </div>
@@ -137,6 +144,8 @@ const PendingApproval = () => {
       title: "Status",
       dataIndex: "status",
       key: "status",
+      align: "center",
+      width: 120,
       filters: [
         { text: "Pending", value: "pending" },
         { text: "Verified", value: "verified" },
