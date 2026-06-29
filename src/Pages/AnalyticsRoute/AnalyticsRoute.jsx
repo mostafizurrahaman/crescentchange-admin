@@ -231,7 +231,7 @@ const AnalyticsRoute = () => {
                       : "text-red-500"
                   }
                 >
-                  {userEngagementData.data.activeUsersChangeText} vs last month
+                  {userEngagementData.data.activeUsersChangeText}
                 </span>
               ) : (
                 <span className="text-gray-500">No change data</span>
@@ -259,7 +259,7 @@ const AnalyticsRoute = () => {
                       : "text-red-500"
                   }
                 >
-                  {userEngagementData.data.newUsersChangeText} vs last month
+                  {userEngagementData.data.newUsersChangeText}
                 </span>
               ) : (
                 <span className="text-gray-500">No change data</span>
@@ -287,7 +287,7 @@ const AnalyticsRoute = () => {
                       : "text-red-500"
                   }
                 >
-                  {userEngagementData.data.returningUsersChangeText} vs last month
+                  {userEngagementData.data.returningUsersChangeText}
                 </span>
               ) : (
                 <span className="text-gray-500">No change data</span>
