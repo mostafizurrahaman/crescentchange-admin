@@ -145,7 +145,10 @@ const ProfileTables = () => {
           <img
             src={record?.image || record?.profileImage || user}
             alt={record?.email}
-            className="w-10 h-10 rounded-full"
+            className="w-10 h-10 rounded-full object-cover"
+            onError={(e) => {
+              e.currentTarget.src = user;
+            }}
           />
           <div>
             <div className="flex items-center gap-2">

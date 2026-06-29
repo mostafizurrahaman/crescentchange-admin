@@ -26,6 +26,13 @@ const SubscriptionQuickLinks = () => {
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [selectedSubscription, setSelectedSubscription] = useState(null);
 
+  const selectedEmail = selectedSubscription?.email || selectedSubscription?.user?.email || "-";
+  const selectedName = selectedSubscription?.name 
+    || selectedSubscription?.business?.name 
+    || selectedSubscription?.organization?.name 
+    || selectedSubscription?.user?.name 
+    || (selectedEmail && selectedEmail !== "-" ? String(selectedEmail).split("@")[0] : "-");
+
   const { data: overviewRes } = useGetSubscriptionOverviewQuery();
   const overview = overviewRes?.data;
 
@@ -39,8 +46,24 @@ const SubscriptionQuickLinks = () => {
     sortOrder: sortOrder || undefined,
   });
 
-  const tableData = Array.isArray(listRes?.data) ? listRes.data : [];
-  const meta = listRes?.meta ?? {};
+  const responseData = listRes?.data;
+  let tableData = [];
+  let meta = {};
+
+  if (Array.isArray(responseData)) {
+    if (responseData[0] && Array.isArray(responseData[0].data)) {
+      tableData = responseData[0].data;
+      meta = responseData[0].meta || {};
+    } else {
+      tableData = responseData;
+      meta = listRes?.meta || {};
+    }
+  } else if (responseData && Array.isArray(responseData.data)) {
+    tableData = responseData.data;
+    meta = responseData.meta || {};
+  } else {
+    meta = listRes?.meta || {};
+  }
 
   const handleExport = () => {
     const rows = (Array.isArray(tableData) ? tableData : []).map((r) => ({
@@ -98,18 +121,24 @@ const SubscriptionQuickLinks = () => {
   const columns = [
     {
       title: "Name/Email",
-      dataIndex: "user",
       key: "email",
       sorter: true,
-      render: (userObj, record) => {
-        const email = userObj?.email ?? "-";
-        const displayName = email && email !== "-" ? String(email).split("@")[0] : "-";
+      render: (_, record) => {
+        const email = record?.email || record?.user?.email || "-";
+        const displayName = record?.name 
+          || record?.business?.name 
+          || record?.organization?.name 
+          || record?.user?.name 
+          || (email && email !== "-" ? String(email).split("@")[0] : "-");
         return (
           <div className="flex items-center gap-3">
             <img
               src={getAvatarUrl(record)}
               alt={displayName}
-              className="w-10 h-10 rounded-full"
+              className="w-10 h-10 rounded-full object-cover"
+              onError={(e) => {
+                e.currentTarget.src = user;
+              }}
             />
             <div>
               <p className="text-sm font-semibold text-gray-900">{displayName}</p>
@@ -315,25 +344,26 @@ const SubscriptionQuickLinks = () => {
               <div className="flex items-center gap-3">
                 <img
                   src={getAvatarUrl(selectedSubscription)}
-                  alt={selectedSubscription?.user?.email}
-                  className="w-12 h-12 rounded-full"
+                  alt={selectedEmail}
+                  className="w-12 h-12 rounded-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = user;
+                  }}
                 />
                 <div>
                   <div className="text-sm font-semibold text-gray-900">
-                    {selectedSubscription?.user?.email
-                      ? String(selectedSubscription.user.email).split("@")[0]
-                      : "-"}
+                    {selectedName}
                   </div>
-                  <div className="text-xs text-gray-500">{selectedSubscription?.user?.email || "-"}</div>
+                  <div className="text-xs text-gray-500">{selectedEmail}</div>
                 </div>
               </div>
 
               <div className="p-4 border rounded-xl bg-gray-50">
                 <p className="text-xs text-gray-500">User</p>
                 <p className="text-base font-semibold text-gray-900">
-                  {selectedSubscription?.user?.email ? String(selectedSubscription.user.email).split("@")[0] : "-"}
+                  {selectedName}
                 </p>
-                <p className="text-sm text-gray-600">Email: {selectedSubscription?.user?.email || "-"}</p>
+                <p className="text-sm text-gray-600">Email: {selectedEmail}</p>
               </div>
 
               <div className="grid grid-cols-2 gap-3">

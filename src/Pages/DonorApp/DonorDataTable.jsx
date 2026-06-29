@@ -80,7 +80,10 @@ const DonorDataTable = () => {
           <img
             src={record?.image || record?.profileImage || user}
             alt={record.name}
-            className="w-10 h-10 rounded-full"
+            className="w-10 h-10 rounded-full object-cover"
+            onError={(e) => {
+              e.currentTarget.src = user;
+            }}
           />
           <div>
             <p className="text-sm font-semibold text-gray-900">{record.name}</p>

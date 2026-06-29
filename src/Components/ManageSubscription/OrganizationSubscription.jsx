@@ -36,8 +36,31 @@ const OrganizationSubscription = ({ setExportHandler }) => {
     toDate,
   });
 
-  const data = Array.isArray(listRes?.data) ? listRes.data : [];
-  const pagination = listRes?.meta ?? {};
+  const responseData = listRes?.data;
+  let data = [];
+  let pagination = {};
+
+  if (Array.isArray(responseData)) {
+    if (responseData[0] && Array.isArray(responseData[0].data)) {
+      data = responseData[0].data;
+      pagination = responseData[0].meta || {};
+    } else {
+      data = responseData;
+      pagination = listRes?.meta || {};
+    }
+  } else if (responseData && Array.isArray(responseData.data)) {
+    data = responseData.data;
+    pagination = responseData.meta || {};
+  } else {
+    pagination = listRes?.meta || {};
+  }
+
+  console.log("DEBUG SUBSCRIPTIONS:", {
+    listRes,
+    responseData,
+    data,
+    pagination
+  });
 
 
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -46,6 +69,13 @@ const OrganizationSubscription = ({ setExportHandler }) => {
 
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [selectedSubscription, setSelectedSubscription] = useState(null);
+
+  const selectedEmail = selectedSubscription?.email || selectedSubscription?.user?.email || "-";
+  const selectedName = selectedSubscription?.name 
+    || selectedSubscription?.business?.name 
+    || selectedSubscription?.organization?.name 
+    || selectedSubscription?.user?.name 
+    || (selectedEmail && selectedEmail !== "-" ? String(selectedEmail).split("@")[0] : "-");
 
   // 📸 Handle image upload
   const handleBeforeUpload = (file) => {
@@ -177,20 +207,23 @@ const OrganizationSubscription = ({ setExportHandler }) => {
   const columns = [
     {
       title: "Name/Email",
-      dataIndex: "user",
       key: "email",
-      render: (userObj, record) => {
-        const email = userObj?.email ?? "-";
-        const displayName = record?.business?.name 
+      render: (_, record) => {
+        const email = record?.email || record?.user?.email || "-";
+        const displayName = record?.name 
+          || record?.business?.name 
           || record?.organization?.name 
-          || userObj?.name 
+          || record?.user?.name 
           || (email && email !== "-" ? String(email).split("@")[0] : "-");
         return (
         <div className="flex items-center gap-2">
           <img
             src={getAvatarUrl(record)}
             alt={displayName}
-            className="w-10 h-10 rounded-full"
+            className="w-10 h-10 rounded-full object-cover"
+            onError={(e) => {
+              e.currentTarget.src = user;
+            }}
           />
           <div>
             <p className="font-medium">{displayName}</p>
@@ -428,14 +461,17 @@ const OrganizationSubscription = ({ setExportHandler }) => {
             <div className="flex items-center gap-3">
               <img
                 src={getAvatarUrl(selectedSubscription)}
-                alt={selectedSubscription?.user?.email}
-                className="w-12 h-12 rounded-full"
+                alt={selectedEmail}
+                className="w-12 h-12 rounded-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = user;
+                }}
               />
               <div>
                 <div className="text-sm font-semibold text-gray-900">
-                  {selectedSubscription?.user?.email?.split("@")[0] || "-"}
+                  {selectedName}
                 </div>
-                <div className="text-xs text-gray-500">{selectedSubscription?.user?.email || "-"}</div>
+                <div className="text-xs text-gray-500">{selectedEmail}</div>
               </div>
             </div>
 

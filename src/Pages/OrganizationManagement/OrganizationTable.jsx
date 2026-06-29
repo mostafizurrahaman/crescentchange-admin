@@ -165,6 +165,14 @@ const OrganizationTable = () => {
       title: "Status",
       dataIndex: ["auth", "status"],
       key: "status",
+      align: "center",
+      width: 120,
+      filters: [
+        { text: "Pending", value: "pending" },
+        { text: "Verified", value: "verified" },
+        { text: "Suspended", value: "suspended" },
+      ],
+      onFilter: (value, record) => record?.auth?.status === value,
       render: (status) => {
         const s = String(status || "").toLowerCase();
         const cls =

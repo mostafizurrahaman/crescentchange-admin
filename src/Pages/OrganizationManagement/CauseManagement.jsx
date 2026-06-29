@@ -12,6 +12,7 @@ import { SearchOutlined } from "@ant-design/icons";
 import { VscEye } from "react-icons/vsc";
 import { FaPencilAlt, FaPlus } from "react-icons/fa";
 import { FiDownload } from "react-icons/fi";
+import user from "../../assets/image/user.png";
 const { Option } = Select;
 
 import useSmartFetchHook from "../../Components/hooks/useSmartFetchHook.ts";
@@ -140,9 +141,12 @@ const CauseManagement = () => {
       render: (_, record) => (
         <div className="flex items-center gap-3">
           <img
-            src={record?.organization?.logoImage || ""}
+            src={record?.organization?.logoImage || user}
             alt={record.name}
             className="object-cover w-10 h-10 rounded-full"
+            onError={(e) => {
+              e.currentTarget.src = user;
+            }}
           />
           <div>
             <p className="text-sm font-semibold text-gray-900">{record.name}</p>
@@ -168,6 +172,8 @@ const CauseManagement = () => {
       title: "Category",
       dataIndex: "category",
       key: "category",
+      align: "center",
+      width: 120,
       filters: (categoriesRes?.data || []).map((c) => ({ text: c.label, value: c.value })),
       onFilter: (value, record) => record.category === value,
       render: (value) => (
@@ -180,6 +186,8 @@ const CauseManagement = () => {
       title: "Status",
       dataIndex: "status",
       key: "status",
+      align: "center",
+      width: 180,
       filters: [
         { text: "Pending", value: "pending" },
         { text: "Verified", value: "verified" },

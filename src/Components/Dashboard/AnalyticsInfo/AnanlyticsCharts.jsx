@@ -1,4 +1,5 @@
 
+import { useNavigate } from "react-router-dom";
 import { BsArrowUpRight } from "react-icons/bs";
 
 const AnanlyticsCharts = ({
@@ -7,6 +8,8 @@ const AnanlyticsCharts = ({
   totalActiveOrganizations,
   organizationChangeText,
 }) => {
+  const navigate = useNavigate();
+
   return (
     <div className="my-3">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -15,7 +18,7 @@ const AnanlyticsCharts = ({
             <div className="flex justify-between items-center gap-2">
               <p className="text-base font-semibold text-gray-900">Total Donated</p>
             </div>
-            <BsArrowUpRight />
+            <BsArrowUpRight className="cursor-pointer hover:text-purple-600 transition" onClick={() => navigate("/donationQuickLink")} />
           </div>
           <div className="">
             <h1 className="text-3xl font-semibold text-gray-900">
@@ -35,7 +38,7 @@ const AnanlyticsCharts = ({
             <div>
               <p className="text-base font-semibold text-gray-900">Active Organizations</p>
             </div>
-            <BsArrowUpRight />
+            <BsArrowUpRight className="cursor-pointer hover:text-purple-600 transition" onClick={() => navigate("/organization-management")} />
           </div>
           <div className="">
             <h1 className="text-3xl font-semibold text-gray-900">
