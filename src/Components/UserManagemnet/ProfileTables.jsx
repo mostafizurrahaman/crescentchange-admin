@@ -166,6 +166,17 @@ const ProfileTables = () => {
       ),
     },
     {
+      title: "Role",
+      dataIndex: "role",
+      key: "role",
+      align: "center",
+      render: (role) => (
+        <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 capitalize">
+          {role?.toLowerCase() || "-"}
+        </span>
+      ),
+    },
+    {
       title: "Last Active",
       dataIndex: "lastActive",
       key: "lastActive",
