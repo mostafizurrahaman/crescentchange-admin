@@ -34,7 +34,9 @@ const baseQuery = async (
   if (status === 401 || status === 403) {
     api.dispatch(SetAccessToken(null));
     localStorage.removeItem("accessToken");
-    window.location.href = "/sign-in";
+    if (window.location.pathname !== "/sign-in") {
+      window.location.href = "/sign-in";
+    }
   }
 
   return result;

@@ -25,6 +25,11 @@ const AllUsers = () => {
     }
   };
 
+  const cleanChangeText = (text) => {
+    if (!text) return "";
+    return text.replace(/vs\s+last\s+month/gi, "").trim();
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
 
@@ -47,7 +52,7 @@ const AllUsers = () => {
           <div className="flex items-end gap-3">
             <p className="text-4xl font-bold text-gray-900">{totalRegisteredProfiles.toLocaleString()}</p>
             <p className="pb-1 text-xs text-gray-500">
-              <span className="text-green-600">{stats.totalChangeText || "+0.0%"}</span> vs last month
+              <span className="text-green-600">{cleanChangeText(stats.totalChangeText) || "+0.0%"}</span> vs last month
             </p>
           </div>
 
@@ -57,10 +62,10 @@ const AllUsers = () => {
                 <div>
                   <p className="text-sm font-semibold text-gray-900">Donors</p>
                   <p className="mt-1 text-xs text-gray-500">
-                    <span className="text-green-600">{stats.clientsChangeText || "+0.0%"}</span> vs last month
+                    <span className="text-green-600">{cleanChangeText(stats.clientsChangeText) || "+0.0%"}</span> vs last month
                   </p>
                 </div>
-                <Link to="/client-management" className="flex items-center justify-center bg-white rounded-full w-9 h-9">
+                <Link to="/donor-app" className="flex items-center justify-center bg-white rounded-full w-9 h-9">
                   <BsArrowUpRight />
                 </Link>
               </div>
@@ -75,7 +80,7 @@ const AllUsers = () => {
                 <div>
                   <p className="text-sm font-semibold text-gray-900">Organizations</p>
                   <p className="mt-1 text-xs text-gray-500">
-                    <span className="text-green-600">{stats.organizationsChangeText || "+0.0%"}</span> vs last month
+                    <span className="text-green-600">{cleanChangeText(stats.organizationsChangeText) || "+0.0%"}</span> vs last month
                   </p>
                 </div>
                 <Link to="/organization-management" className="flex items-center justify-center bg-white rounded-full w-9 h-9">
@@ -93,7 +98,7 @@ const AllUsers = () => {
                 <div>
                   <p className="text-sm font-semibold text-gray-900">Businesses</p>
                   <p className="mt-1 text-xs text-gray-500">
-                    <span className="text-red-500">{stats.businessesChangeText || "-0.0%"}</span> vs last month
+                    <span className="text-red-500">{cleanChangeText(stats.businessesChangeText) || "-0.0%"}</span> vs last month
                   </p>
                 </div>
                 <Link to="/business-admin" className="flex items-center justify-center bg-white rounded-full w-9 h-9">
@@ -111,7 +116,7 @@ const AllUsers = () => {
                 <div>
                   <p className="text-sm font-semibold text-gray-900">Pending Approvals</p>
                   <p className="mt-1 text-xs text-gray-500">
-                    <span className="text-yellow-600">{stats.pendingChangeText || "+0.0%"}</span> vs last month
+                    <span className="text-yellow-600">{cleanChangeText(stats.pendingChangeText) || "+0.0%"}</span> vs last month
                   </p>
                 </div>
                 <button

@@ -2,6 +2,7 @@
 import { SetAccessToken } from "./authSlice";
 import { baseApi } from "../baseApi";
 import { ErrorToast, SuccessToast } from "../../../lib/utils";
+import { jwtDecode } from "jwt-decode";
 
 const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -18,16 +19,23 @@ const authApi = baseApi.injectEndpoints({
           const { data } = await queryFulfilled;
           const twoFactorRequired = data?.data?.twoFactorRequired;
           const accessToken = data?.data?.accessToken;
-          // const user = data?.data;
           if (twoFactorRequired) {
             // UI will prompt for OTP and call /auth/2fa/verify-login.
             return;
           }
           if (!accessToken) return;
-          // if (user?.role !== "ADMIN" ) {
-          //   ErrorToast("You are not authorized to login.");
-          //   return;
-          // }
+          
+          try {
+            const decoded = jwtDecode(accessToken);
+            const role = decoded?.role || data?.data?.user?.role || data?.data?.role;
+            if (role !== "ADMIN") {
+              ErrorToast("You are not an admin.");
+              return;
+            }
+          } catch (e) {
+            ErrorToast("Invalid authorization token.");
+            return;
+          }
 
           // Set access token first
           localStorage.setItem("accessToken", accessToken);
@@ -160,6 +168,19 @@ const authApi = baseApi.injectEndpoints({
             ErrorToast("Invalid login response.");
             return;
           }
+
+          try {
+            const decoded = jwtDecode(accessToken);
+            const role = decoded?.role || data?.data?.user?.role || data?.data?.role;
+            if (role !== "SUPER_ADMIN") {
+              ErrorToast("You are not authorized to login.");
+              return;
+            }
+          } catch (e) {
+            ErrorToast("Invalid authorization token.");
+            return;
+          }
+
           localStorage.setItem("accessToken", accessToken);
           dispatch(SetAccessToken(accessToken));
           SuccessToast(data?.message || "Login successful.");

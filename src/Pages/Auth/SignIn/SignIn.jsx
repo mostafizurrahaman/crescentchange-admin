@@ -144,13 +144,13 @@ const SignIn = () => {
                 </div>
 
                 <Form.Item>
-                  <button
-                    className="w-full p-2 py-4 text-lg font-bold text-center rounded-md bg-primary hover:text-black"
-                    type="submit"
-                    disabled={isLoading}
+                  <Button
+                    className="w-full p-2 py-4 text-lg font-bold text-center rounded-md bg-primary hover:text-black h-auto border-0"
+                    htmlType="submit"
+                    loading={isLoading}
                   >
-                    {isLoading ? 'Signing In...' : 'Sign In'}
-                  </button>
+                    Sign In
+                  </Button>
                 </Form.Item>
               </Form>
             </ConfigProvider>
