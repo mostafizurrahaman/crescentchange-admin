@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: "crescentchange-admin",
+      name: "admin",
       script: "npx",
       args: "serve -s dist -l 5174",
       instances: 1,
