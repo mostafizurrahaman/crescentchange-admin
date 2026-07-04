@@ -2,8 +2,8 @@ module.exports = {
   apps: [
     {
       name: "crescentchange-admin",
-      script: "npm",
-      args: "run preview -- --host 0.0.0.0 --port 4173",
+      script: "npx",
+      args: "serve -s dist -l 5174",
       instances: 1,
       exec_mode: "fork",
       autorestart: true,
